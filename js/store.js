@@ -98,7 +98,7 @@ var Store = {
     this.clearCart();
     return this.addToCart(stallId, stallName, item);
   },
-
+// Handles cart item quantity updates and removes items when quantity reaches zero.
   updateCartItemQty: function (itemId, qty) {
     var cart = this.getCart();
     if (qty <= 0) {
