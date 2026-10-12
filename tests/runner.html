@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BHUKH LAGI — Test Runner</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #F5F0EB;
+      color: #2F4156;
+      margin: 0;
+      padding: 30px;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      background: #FFFFFF;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(47, 65, 86, 0.08);
+      padding: 30px;
+      border: 1px solid rgba(47, 65, 86, 0.1);
+    }
+    h1 {
+      margin-top: 0;
+      color: #2F4156;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .summary {
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+    .summary.pass { background: #E8F5E9; color: #2E7D32; border: 1px solid #C8E6C9; }
+    .summary.fail { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
+    .suite {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #EAE6DF;
+      padding-bottom: 16px;
+    }
+    .suite-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #2F4156;
+      margin-bottom: 10px;
+    }
+    .test {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 5px 0;
+      font-size: 0.92rem;
+    }
+    .test.pass .status { color: #2E7D32; font-weight: bold; }
+    .test.fail .status { color: #C62828; font-weight: bold; }
+    .test-error {
+      margin-left: 24px;
+      color: #C62828;
+      font-family: monospace;
+      font-size: 0.85rem;
+      background: #FFF5F5;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 4px;
+      white-space: pre-wrap;
+    }
+  </style>
+
+  <!-- App scripts -->
+  <script src="../js/brand.js"></script>
+  <script src="../js/utils/dom.js"></script>
+  <script src="../js/utils/time.js"></script>
+  <script src="../js/utils/order-id.js"></script>
+  <script src="../js/store.js"></script>
+  <script src="../js/data.js"></script>
+
+  <!-- Test Framework -->
+  <script>
+    (function () {
+      var suites = [];
+      var currentSuite = null;
+      var beforeHooks = [];
+
+      window.jest = {
+        fn: function (impl) {
+          var mock = function () {
+            mock.mock.calls.push(Array.prototype.slice.call(arguments));
+            if (impl) return impl.apply(this, arguments);
+          };
+          mock.mock = { calls: [] };
+          return mock;
+        }
+      };
+
+      window.describe = function (name, fn) {
+        var suite = { name: name, tests: [], beforeHooks: [] };
+        suites.push(suite);
+        var prevSuite = currentSuite;
+        currentSuite = suite;
+        fn();
+        currentSuite = prevSuite;
+      };
+
+      window.beforeEach = function (fn) {
+        if (currentSuite) {
+          currentSuite.beforeHooks.push(fn);
+        } else {
+          beforeHooks.push(fn);
+        }
+      };
+
+      window.test = function (name, fn) {
+        if (!currentSuite) {
+          window.describe('Root', function () { window.test(name, fn); });
+          return;
+        }
+        currentSuite.tests.push({ name: name, fn: fn });
+      };
+
+      function deepEqual(a, b) {
+        if (a === b) return true;
+        if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return false;
+        var keysA = Object.keys(a), keysB = Object.keys(b);
+        if (keysA.length !== keysB.length) return false;
+        for (var i = 0; i < keysA.length; i++) {
+          var k = keysA[i];
+          if (!keysB.includes(k) || !deepEqual(a[k], b[k])) return false;
+        }
+        return true;
+      }
+
+      window.expect = function (actual) {
+        var matchers = function (isNot) {
+          return {
+            toBe: function (expected) {
+              var pass = (actual === expected);
+              if (isNot ? pass : !pass) throw new Error('Expected ' + JSON.stringify(actual) + (isNot ? ' not to be ' : ' to be ') + JSON.stringify(expected));
+            },
+            toEqual: function (expected) {
+              var pass = deepEqual(actual, expected);
+              if (isNot ? pass : !pass) throw new Error('Expected ' + JSON.stringify(actual) + (isNot ? ' not to equal ' : ' to equal ') + JSON.stringify(expected));
+            },
+            toBeTruthy: function () {
+              var pass = !!actual;
+              if (isNot ? pass : !pass) throw new Error('Expected ' + JSON.stringify(actual) + (isNot ? ' not to be truthy' : ' to be truthy'));
+            },
+            toBeFalsy: function () {
+              var pass = !actual;
+              if (isNot ? pass : !pass) throw new Error('Expected ' + JSON.stringify(actual) + (isNot ? ' not to be falsy' : ' to be falsy'));
+            },
+            toBeNull: function () {
+              var pass = (actual === null);
+              if (isNot ? pass : !pass) throw new Error('Expected ' + JSON.stringify(actual) + (isNot ? ' not to be null' : ' to be null'));
+            },
+            toBeUndefined: function () {
+              var pass = (actual === undefined);
+              if (isNot ? pass : !pass) throw new Error('Expected ' + JSON.stringify(actual) + (isNot ? ' not to be undefined' : ' to be undefined'));
+            },
+            toBeGreaterThan: function (n) {
+              var pass = (actual > n);
+              if (isNot ? pass : !pass) throw new Error('Expected ' + actual + (isNot ? ' not to be > ' : ' to be > ') + n);
+            },
+            toBeLessThanOrEqual: function (n) {
+              var pass = (actual <= n);
+              if (isNot ? pass : !pass) throw new Error('Expected ' + actual + (isNot ? ' not to be <= ' : ' to be <= ') + n);
+            },
+            toMatch: function (pattern) {
+              var re = (typeof pattern === 'string') ? new RegExp(pattern) : pattern;
+              var pass = re.test(String(actual));
+              if (isNot ? pass : !pass) throw new Error('Expected "' + actual + '" ' + (isNot ? 'not to match ' : 'to match ') + pattern);
+            },
+            toHaveProperty: function (prop) {
+              var pass = (actual && (prop in actual));
+              if (isNot ? pass : !pass) throw new Error('Expected object ' + (isNot ? 'not to have property "' : 'to have property "') + prop + '"');
+            },
+            toHaveBeenCalledTimes: function (count) {
+              var calls = (actual && actual.mock && actual.mock.calls) ? actual.mock.calls.length : 0;
+              var pass = (calls === count);
+              if (isNot ? pass : !pass) throw new Error('Expected ' + count + ' calls, but got ' + calls);
+            }
+          };
+        };
+
+        var obj = matchers(false);
+        obj.not = matchers(true);
+        return obj;
+      };
+
+      window.__runAllTests = function () {
+        var total = 0, passed = 0, failed = 0;
+        var container = document.getElementById('test-results');
+        var outputLog = [];
+
+        suites.forEach(function (suite) {
+          var suiteEl = document.createElement('div');
+          suiteEl.className = 'suite';
+          var h2 = document.createElement('div');
+          h2.className = 'suite-name';
+          h2.textContent = suite.name;
+          suiteEl.appendChild(h2);
+
+          outputLog.push('\n● ' + suite.name);
+
+          suite.tests.forEach(function (t) {
+            total++;
+            localStorage.clear();
+            if (window.Store) Store._cartListeners = [];
+            beforeHooks.forEach(function (h) { h(); });
+            suite.beforeHooks.forEach(function (h) { h(); });
+
+            var testEl = document.createElement('div');
+            testEl.className = 'test';
+            try {
+              t.fn();
+              passed++;
+              testEl.className += ' pass';
+              testEl.innerHTML = '<span class="status">✓</span> <span class="title">' + t.name + '</span>';
+              outputLog.push('  ✓ ' + t.name);
+            } catch (err) {
+              failed++;
+              testEl.className += ' fail';
+              testEl.innerHTML = '<span class="status">✕</span> <span class="title">' + t.name + '</span>' +
+                '<div class="test-error">' + (err.stack || err.message) + '</div>';
+              outputLog.push('  ✕ ' + t.name + ' --> ' + err.message);
+            }
+            suiteEl.appendChild(testEl);
+          });
+
+          container.appendChild(suiteEl);
+        });
+
+        var summaryEl = document.getElementById('test-summary');
+        summaryEl.className = 'summary ' + (failed === 0 ? 'pass' : 'fail');
+        summaryEl.textContent = 'Tests: ' + passed + ' passed, ' + failed + ' failed, ' + total + ' total';
+
+        console.log('TEST_RUN_START');
+        console.log(outputLog.join('\n'));
+        console.log('TEST_SUMMARY: ' + passed + ' passed, ' + failed + ' failed, ' + total + ' total');
+        console.log('TEST_RUN_END');
+      };
+    })();
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>BHUKH LAGI Test Suite <span style="font-size:0.9rem;font-weight:normal;color:#567C8D;">v1.0.0</span></h1>
+    <div id="test-summary" class="summary">Running tests…</div>
+    <div id="test-results"></div>
+  </div>
+
+  <!-- Test files -->
+  <script src="order.test.js"></script>
+  <script src="cart.test.js"></script>
+  <script src="data.test.js"></script>
+  <script src="store.test.js"></script>
+  <script src="streak.test.js"></script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      window.__runAllTests();
+    });
+  </script>
+</body>
+</html>
