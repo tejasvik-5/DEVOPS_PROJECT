@@ -123,11 +123,20 @@ var Store = {
     this.setCart({ stallId: null, stallName: '', items: [] });
   },
 
-  getCartTotal: function () {
-    var cart = this.getCart();
-    return cart.items.reduce(function (sum, item) { return sum + (item.price * item.qty); }, 0);
-  },
+getCartTotal: function () {
+  var cart = this.getCart();
 
+  return cart.items.reduce(function (sum, item) {
+    var price = Number(item.price);
+    var qty = Number(item.qty);
+
+    if (!Number.isFinite(price) || !Number.isInteger(qty) || qty < 1) {
+      return sum;
+    }
+
+    return sum + (price * qty);
+  }, 0);
+},
   getCartItemCount: function () {
     var cart = this.getCart();
     return cart.items.reduce(function (sum, item) { return sum + item.qty; }, 0);
