@@ -34,7 +34,7 @@ var FoodCard = {
         actionHtml = '<button class="add-btn" data-item-id="' + item.id + '" data-stall-id="' + stallId + '" data-stall-name="' + DOM.escapeHTML(stallName) + '">Add</button>';
       }
     } else {
-      actionHtml = '<button class="add-btn" disabled>Unavailable</button>';
+     actionHtml = '<button class="add-btn" disabled aria-disabled="true">Unavailable</button>';
     }
 
     return '<div class="' + cardClass + '" data-item-id="' + item.id + '">' +
