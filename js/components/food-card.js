@@ -4,7 +4,9 @@
 
 var FoodCard = {
   render: function (item, stallId, stallName) {
-    var isAvailable = item.available !== false;
+   var isAvailable =
+  item.available !== false &&
+  Store.isItemAvailable(stallId, item.id) !== false;
     var cardClass = 'food-card' + (isAvailable ? '' : ' food-card--unavailable');
     var qty = Store.getCartItemQty(item.id);
 
@@ -32,7 +34,7 @@ var FoodCard = {
         actionHtml = '<button class="add-btn" data-item-id="' + item.id + '" data-stall-id="' + stallId + '" data-stall-name="' + DOM.escapeHTML(stallName) + '">Add</button>';
       }
     } else {
-      actionHtml = '<button class="add-btn" disabled>Unavailable</button>';
+     actionHtml = '<button class="add-btn" disabled aria-disabled="true">Unavailable</button>';
     }
 
     return '<div class="' + cardClass + '" data-item-id="' + item.id + '">' +
