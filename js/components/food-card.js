@@ -4,7 +4,9 @@
 
 var FoodCard = {
   render: function (item, stallId, stallName) {
-    var isAvailable = item.available !== false;
+   var isAvailable =
+  item.available !== false &&
+  Store.isItemAvailable(stallId, item.id) !== false;
     var cardClass = 'food-card' + (isAvailable ? '' : ' food-card--unavailable');
     var qty = Store.getCartItemQty(item.id);
 
