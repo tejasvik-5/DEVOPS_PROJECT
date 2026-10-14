@@ -5,6 +5,7 @@
    ========================================================================== */
 
 var Store = {
+MAX_ITEM_QTY: 10,
   KEYS: {
     USER: 'bl_user',
     CART: 'bl_cart',
@@ -100,20 +101,37 @@ var Store = {
   },
 // Handles cart item quantity updates and removes items when quantity reaches zero.
   updateCartItemQty: function (itemId, qty) {
-    var cart = this.getCart();
-    if (qty <= 0) {
-      cart.items = cart.items.filter(function (i) { return i.id !== itemId; });
-      if (cart.items.length === 0) {
-        cart.stallId = null;
-        cart.stallName = '';
-      }
-    } else {
-      var item = cart.items.find(function (i) { return i.id === itemId; });
-      if (item) item.qty = qty;
-    }
-    this.setCart(cart);
+  var cart = this.getCart();
+  var safeQty = Number(qty);
+
+  if (!Number.isInteger(safeQty)) {
     return cart;
-  },
+  }
+
+  if (safeQty > this.MAX_ITEM_QTY) {
+    safeQty = this.MAX_ITEM_QTY;
+  }
+
+  if (safeQty <= 0) {
+    cart.items = cart.items.filter(function (i) {
+      return i.id !== itemId;
+    });
+
+    if (cart.items.length === 0) {
+      cart.stallId = null;
+      cart.stallName = '';
+    }
+  } else {
+    var item = cart.items.find(function (i) {
+      return i.id === itemId;
+    });
+
+    if (item) item.qty = safeQty;
+  }
+
+  this.setCart(cart);
+  return cart;
+},
 
   removeFromCart: function (itemId) {
     return this.updateCartItemQty(itemId, 0);
