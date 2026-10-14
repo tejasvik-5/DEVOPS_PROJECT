@@ -4,18 +4,18 @@
    ========================================================================== */
 
 var QuantityControl = {
-  render: function (itemId, qty, stallId, stallName) {
-return '<div class="qty-control" data-item-id="' + itemId + '">' +
-  '<button class="qty-control__btn qty-minus" data-item-id="' + itemId +
-  '" aria-label="Decrease quantity of ' + DOM.escapeHTML(itemId) + '">&minus;</button>' +
-  '<span class="qty-control__count" aria-live="polite">' + qty + '</span>' +
-  '<button class="qty-control__btn qty-plus" data-item-id="' + itemId +
-  '" data-stall-id="' + stallId +
-  '" data-stall-name="' + DOM.escapeHTML(stallName) +
-  '" aria-label="Increase quantity of ' + DOM.escapeHTML(itemId) + '">+</button>' +
-'</div>';
+render: function (itemId, qty, stallId, stallName) {
+  return '<div class="qty-control" data-item-id="' + itemId + '">' +
+    '<button class="qty-control__btn qty-minus" data-item-id="' + itemId +
+    '" aria-label="Decrease quantity of ' + DOM.escapeHTML(itemId) + '">&minus;</button>' +
+    '<span class="qty-control__count" aria-live="polite">' + qty + '</span>' +
+    '<button class="qty-control__btn qty-plus" data-item-id="' + itemId +
+    '" data-stall-id="' + stallId +
+    '" data-stall-name="' + DOM.escapeHTML(stallName) +
+    '" aria-label="Increase quantity of ' + DOM.escapeHTML(itemId) + '">+</button>' +
+    '</div>';
+},
 
-  },
 
   /**
    * Initialize event delegation for add buttons and quantity controls.
