@@ -117,3 +117,9 @@ describe('Cart (Single-Stall)', () => {
     expect(Store.getCartItemCount()).toBe(1);
   });
 });
+test('cart quantity cannot exceed 10', () => {
+  Store.addToCart('maximus', 'Maximus', item1);
+  Store.updateCartItemQty('MAX001', 25);
+
+  expect(Store.getCartItemQty('MAX001')).toBe(10);
+});
