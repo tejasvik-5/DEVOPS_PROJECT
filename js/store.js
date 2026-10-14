@@ -298,3 +298,26 @@ getCartTotal: function () {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Store;
 }
+validateOrderDraft: function (order) {
+  if (!order) {
+    return { valid: false, reason: 'MISSING_ORDER' };
+  }
+
+  if (!order.id || !/^BL\d{5,}$/.test(order.id)) {
+    return { valid: false, reason: 'INVALID_ORDER_ID' };
+  }
+
+  if (!order.stallId) {
+    return { valid: false, reason: 'MISSING_STALL' };
+  }
+
+  if (!Array.isArray(order.items) || order.items.length === 0) {
+    return { valid: false, reason: 'EMPTY_ORDER' };
+  }
+
+  if (!Number.isFinite(Number(order.total)) || Number(order.total) <= 0) {
+    return { valid: false, reason: 'INVALID_TOTAL' };
+  }
+
+  return { valid: true, reason: null };
+},
