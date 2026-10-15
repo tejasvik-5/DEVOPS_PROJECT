@@ -116,12 +116,21 @@ describe('Cart (Single-Stall)', () => {
     expect(Store.getCart().stallId).toBe('maximus');
     expect(Store.getCartItemCount()).toBe(1);
   });
-});
 test('cart quantity cannot exceed 10', () => {
-  Store.addToCart('maximus', 'Maximus', item1);
-  Store.updateCartItemQty('MAX001', 25);
+    const item1 = {
+        id: 'MAX001',
+        name: 'Paneer Tikka',
+        price: 180,
+        prepTime: 12,
+        veg: true
+    };
 
-  expect(Store.getCartItemQty('MAX001')).toBe(10);
+    Store.addToCart('maximus', 'Maximus', item1);
+
+    Store.updateCartItemQty('MAX001', 25);
+
+    expect(Store.getCartItemQty('MAX001')).toBe(10);
+});
 test('getCartTotal ignores invalid item price', () => {
   Store.setCart({
     stallId: 'maximus',
