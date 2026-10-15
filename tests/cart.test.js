@@ -122,4 +122,16 @@ test('cart quantity cannot exceed 10', () => {
   Store.updateCartItemQty('MAX001', 25);
 
   expect(Store.getCartItemQty('MAX001')).toBe(10);
+test('getCartTotal ignores invalid item price', () => {
+  Store.setCart({
+    stallId: 'maximus',
+    stallName: 'Maximus',
+    items: [
+      { id: 'A', name: 'Valid', price: 100, qty: 2 },
+      { id: 'B', name: 'Invalid', price: 'bad', qty: 2 }
+    ]
+  });
+
+  expect(Store.getCartTotal()).toBe(200);
+});
 });
