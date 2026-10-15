@@ -10,6 +10,7 @@ var StallDetailPage = {
       return;
     }
 
+
     var menu = StallData.getStallMenu(stallId);
     var menuCategories = Object.keys(menu);
     var cats = stall.category.join(' \u2022 ');
@@ -80,3 +81,6 @@ var StallDetailPage = {
     }
   }
 };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = StallDetailPage;
+}

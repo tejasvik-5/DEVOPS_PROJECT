@@ -287,17 +287,6 @@ getCartTotal: function () {
     return null;
   },
 
-  // ═══════════════════════ CLEAR ═══════════════════════
-
-  clearAll: function () {
-    var self = this;
-    Object.values(this.KEYS).forEach(function (key) { localStorage.removeItem(key); });
-  }
-};
-
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = Store;
-}
 validateOrderDraft: function (order) {
   if (!order) {
     return { valid: false, reason: 'MISSING_ORDER' };
@@ -321,3 +310,16 @@ validateOrderDraft: function (order) {
 
   return { valid: true, reason: null };
 },
+
+  // ═══════════════════════ CLEAR ═══════════════════════
+
+  clearAll: function () {
+    var self = this;
+    Object.values(this.KEYS).forEach(function (key) { localStorage.removeItem(key); });
+  }
+};
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = Store;
+}
+ 
