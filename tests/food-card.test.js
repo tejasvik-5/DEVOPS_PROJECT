@@ -201,4 +201,21 @@ describe('FoodCard — Compact Non-Photo Visual Cards', () => {
       expect(html).toContain('food-card__icon-badge');
     });
   });
+test('food card becomes unavailable when Store override is false', () => {
+  var item = StallData.getItem('MAX023');
+
+  Store.setStallOverride('maximus', {
+    items: { MAX023: false }
+  });
+
+  var html = FoodCard.render(
+    item,
+    'maximus',
+    'Maximus Live Counter',
+    'Live Counter'
+  );
+
+  expect(html).toContain('Currently unavailable');
+  expect(html).toContain('disabled');
+}); 
 });
