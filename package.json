@@ -1,0 +1,29 @@
+{
+  "name": "bhukh-lagi",
+  "version": "1.0.0",
+  "description": "BHUKH LAGI — Campus food-court ordering web app",
+  "main": "index.html",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "test": "jest --verbose && npm --prefix backend test",
+    "test:frontend": "jest --verbose",
+    "test:backend": "npm --prefix backend test",
+    "test:watch": "jest --watch",
+    "lint": "echo 'No linting configured yet'"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "roots": ["<rootDir>/tests"],
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Anshanand1341/100-days-code-challenge-"
+  },
+  "license": "MIT"
+}
