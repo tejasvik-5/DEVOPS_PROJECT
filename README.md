@@ -81,3 +81,24 @@ npm run test:backend
 Browser Test Runner:
 - Open `http://localhost:3000/tests/runner.html` to run unit test suites in-browser.
 - Open `http://localhost:3000/tests/verify_flow.html` to run verification checks.
+
+
+## Week 1 Development Summary
+
+During the first week, the project focused on improving validation, login security, cart handling, and checkout reliability.
+
+### Completed Development Tasks
+
+- **Day 1:** Project setup and workflow foundation.
+- **Day 2:** Shared input validation utility.
+- **Day 3:** Student and admin login validation.
+- **Day 4:** Authentication feedback and live item availability.
+- **Day 5:** Quantity-control accessibility improvements.
+- **Day 6:** Cart validation before checkout.
+
+### Git Workflow
+
+- Used feature branches for individual tasks.
+- Created commits with descriptive messages.
+- Pushed feature branches to GitHub.
+- Used pull requests to propose changes for review.
