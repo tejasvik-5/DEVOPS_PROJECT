@@ -122,4 +122,29 @@ describe('Payment & Order Model', () => {
     current = Store.getOrder(orderId);
     expect(current.status).toBe('COMPLETED');
   });
+test('validateOrderDraft accepts a valid order', () => {
+  var order = {
+    id: 'BL10001',
+    stallId: 'maximus',
+    items: [{ id: 'MAX023', name: 'Samosa', qty: 1, price: 12 }],
+    total: 12
+  };
+
+  expect(Store.validateOrderDraft(order)).toEqual({
+    valid: true,
+    reason: null
+  });
+});
+
+test('validateOrderDraft rejects empty order', () => {
+  expect(Store.validateOrderDraft({
+    id: 'BL10001',
+    stallId: 'maximus',
+    items: [],
+    total: 0
+  })).toEqual({
+    valid: false,
+    reason: 'EMPTY_ORDER'
+  });
+}); 
 });
