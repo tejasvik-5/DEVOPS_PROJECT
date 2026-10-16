@@ -198,6 +198,32 @@ getCartTotal: function () {
     }
     return null;
   },
+updateOrderStatus: function (orderId, nextStatus, extraUpdates) {
+  var order = this.getOrder(orderId);
+
+  if (!order) {
+    return { success: false, reason: 'ORDER_NOT_FOUND' };
+  }
+
+  if (!OrderStatus.canTransition(order.status, nextStatus)) {
+    return {
+      success: false,
+      reason: 'INVALID_TRANSITION',
+      current: order.status,
+      requested: nextStatus
+    };
+  }
+
+  var updates = Object.assign(
+    { status: nextStatus, orderStatus: nextStatus },
+    extraUpdates || {}
+  );
+
+  return {
+    success: true,
+    order: this.updateOrder(orderId, updates)
+  };
+},
 
   getActiveOrders: function () {
     return this.getOrders().filter(function (o) {
