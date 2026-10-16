@@ -143,4 +143,14 @@ test('getCartTotal ignores invalid item price', () => {
 
   expect(Store.getCartTotal()).toBe(200);
 });
+test('week one cart flow maintains correct total and quantity', () => {
+  Store.addToCart('maximus', 'Maximus', item1);
+
+  expect(Store.getCartItemQty('MAX001')).toBe(1);
+
+  Store.updateCartItemQty('MAX001', 2);
+
+  expect(Store.getCartItemQty('MAX001')).toBe(2);
+  expect(Store.getCartTotal()).toBe(item1.price * 2);
+});
 });
