@@ -224,6 +224,18 @@ updateOrderStatus: function (orderId, nextStatus, extraUpdates) {
     order: this.updateOrder(orderId, updates)
   };
 },
+getOrderStatusLabel: function (status) {
+  var labels = {
+    PENDING: 'Pending',
+    PREPARING: 'Preparing',
+    DELAYED: 'Delayed',
+    READY: 'Ready',
+    COMPLETED: 'Completed',
+    CANCELLED: 'Cancelled'
+  };
+
+  return labels[status] || 'Unknown';
+},
 
   getActiveOrders: function () {
     return this.getOrders().filter(function (o) {
