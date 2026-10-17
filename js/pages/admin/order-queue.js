@@ -1,7 +1,14 @@
 /* ==========================================================================
    BHUKH LAGI — Admin Order Queue (admin/order-queue.js)
    ========================================================================== */
-
+var ADMIN_STATUS_LABELS = {
+  PENDING: 'Pending',
+  PREPARING: 'Preparing',
+  DELAYED: 'Delayed',
+  READY: 'Ready',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled'
+};
 var AdminOrderQueue = {
   currentFilter: 'ALL',
 
