@@ -132,7 +132,16 @@ var AdminOrderQueue = {
   _bindActions: function (container) {
     DOM.on(container, 'click', '.action-accept', function (e, btn) {
       var oid = btn.getAttribute('data-oid');
-      Store.updateOrder(oid, { status: 'PREPARING', acceptedAt: new Date().toISOString() });
+      var result = Store.updateOrderStatus(
+  oid,
+  'PREPARING',
+  { acceptedAt: new Date().toISOString() }
+);
+
+if (!result.success) {
+  Toast.warning('Order cannot be accepted: ' + result.reason);
+  return;
+}
       Toast.success('Order ' + oid + ' accepted');
       AdminOrderQueue.render(container);
     });
