@@ -224,6 +224,9 @@ updateOrderStatus: function (orderId, nextStatus, extraUpdates) {
     order: this.updateOrder(orderId, updates)
   };
 },
+transitionOrder: function (orderId, nextStatus, updates) {
+  return this.updateOrderStatus(orderId, nextStatus, updates);
+},
 getOrderStatusLabel: function (status) {
   var labels = {
     PENDING: 'Pending',
