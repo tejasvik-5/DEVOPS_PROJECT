@@ -311,6 +311,29 @@ getOrderStatusLabel: function (status) {
     overrides[stallId].items[itemId] = !this.isItemAvailable(stallId, itemId);
     this._set(this.KEYS.STALL_OVERRIDES, overrides);
   },
+setAllItemsAvailability: function (stallId, available) {
+  var stall = StallData.getStall(stallId);
+  if (!stall) return false;
+
+  var overrides = this.getStallOverrides();
+
+  if (!overrides[stallId]) {
+    overrides[stallId] = { items: {} };
+  }
+
+  if (!overrides[stallId].items) {
+    overrides[stallId].items = {};
+  }
+
+  Object.keys(stall.menu).forEach(function (category) {
+    stall.menu[category].forEach(function (item) {
+      overrides[stallId].items[item.id] = !!available;
+    });
+  });
+
+  this._set(this.KEYS.STALL_OVERRIDES, overrides);
+  return true;
+},
 
   isItemAvailable: function (stallId, itemId) {
     var overrides = this.getStallOverrides();
