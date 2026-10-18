@@ -23,6 +23,7 @@ global.BRAND = require('../js/brand.js');
 global.DOM = require('../js/utils/dom.js');
 global.TimeUtil = require('../js/utils/time.js');
 global.OrderID = require('../js/utils/order-id.js');
+global.OrderStatus = require('../js/utils/order-status.js');
 global.Store = require('../js/store.js');
 global.QuantityControl = require('../js/components/quantity-control.js');
 global.FoodCard = require('../js/components/food-card.js');
@@ -39,6 +40,7 @@ if (typeof window !== 'undefined') {
   window.DOM = global.DOM;
   window.TimeUtil = global.TimeUtil;
   window.OrderID = global.OrderID;
+  window.OrderStatus = global.OrderStatus;
   window.Store = global.Store;
   window.QuantityControl = global.QuantityControl;
   window.FoodCard = global.FoodCard;
