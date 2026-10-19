@@ -18,4 +18,19 @@ describe('OrderStatus', () => {
   test('does not allow cancellation after READY', () => {
     expect(OrderStatus.canCancel('READY')).toBe(false);
   });
+test('invalid order transition is rejected', () => {
+  Store.addOrder({
+    id: 'BL10001',
+    status: 'COMPLETED',
+    orderStatus: 'COMPLETED',
+    stallId: 'maximus',
+    total: 100,
+    items: []
+  });
+
+  var result = Store.updateOrderStatus('BL10001', 'PREPARING');
+
+  expect(result.success).toBe(false);
+  expect(result.reason).toBe('INVALID_TRANSITION');
+});
 });
