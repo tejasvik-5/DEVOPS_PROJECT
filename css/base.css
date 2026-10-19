@@ -1,0 +1,202 @@
+/* ==========================================================================
+   BHUKH LAGI — Base Styles (base.css)
+   Font loading, base element styles, utility classes.
+   ========================================================================== */
+
+/* ─── Body ─── */
+body {
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-regular);
+  color: var(--charcoal);
+  background-color: var(--surface-body);
+  line-height: var(--leading-relaxed);
+}
+
+/* ─── Headings ─── */
+h1, .h1 {
+  font-size: var(--text-h1);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--navy);
+}
+
+h2, .h2 {
+  font-size: var(--text-h2);
+  font-weight: var(--weight-semi);
+  line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-tight);
+  color: var(--navy);
+}
+
+h3, .h3 {
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semi);
+  line-height: var(--leading-normal);
+  color: var(--charcoal);
+}
+
+/* ─── Text Utilities ─── */
+.text-muted { color: var(--text-muted); }
+.text-light { color: var(--text-light); }
+.text-navy  { color: var(--navy); }
+.text-teal  { color: var(--teal); }
+.text-white { color: var(--text-inverse); }
+
+.text-sm    { font-size: var(--text-body-sm); }
+.text-caption { font-size: var(--text-caption); font-weight: var(--weight-medium); }
+.text-overline {
+  font-size: var(--text-overline);
+  font-weight: var(--weight-semi);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--text-muted);
+}
+
+.font-handwritten {
+  font-family: var(--font-handwritten);
+  font-size: var(--text-handwritten);
+  font-weight: var(--weight-regular);
+}
+.font-handwritten-lg {
+  font-family: var(--font-handwritten);
+  font-size: var(--text-handwritten-lg);
+  font-weight: var(--weight-semi);
+}
+
+.font-bold   { font-weight: var(--weight-bold); }
+.font-semi   { font-weight: var(--weight-semi); }
+.font-medium { font-weight: var(--weight-medium); }
+
+/* ─── Links ─── */
+a.link {
+  color: var(--teal);
+  font-weight: var(--weight-medium);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+a.link:hover {
+  color: var(--teal-dark);
+}
+
+/* ─── Focus Ring ─── */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Selection ─── */
+::selection {
+  background-color: var(--sky);
+  color: var(--navy);
+}
+
+/* ─── Scrollbar (WebKit) ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ─── Utility: Visually Hidden ─── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ─── Utility: Truncate ─── */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Utility: Flex ─── */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-xs  { gap: var(--space-xs); }
+.gap-sm  { gap: var(--space-sm); }
+.gap-md  { gap: var(--space-md); }
+.gap-lg  { gap: var(--space-lg); }
+.gap-xl  { gap: var(--space-xl); }
+
+/* ─── Veg / Non-veg Indicator ─── */
+.veg-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+}
+.veg-indicator__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1.5px solid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.veg-indicator__dot::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.veg-indicator--veg .veg-indicator__dot {
+  border-color: var(--veg);
+}
+.veg-indicator--veg .veg-indicator__dot::after {
+  background: var(--veg);
+}
+.veg-indicator--nonveg .veg-indicator__dot {
+  border-color: var(--nonveg);
+}
+.veg-indicator--nonveg .veg-indicator__dot::after {
+  background: var(--nonveg);
+}
+
+/* ─── Price Display ─── */
+.price {
+  font-weight: var(--weight-semi);
+  color: var(--navy);
+}
+.price__currency {
+  font-size: 0.85em;
+}
+
+/* ─── Dividers ─── */
+.divider {
+  border: none;
+  height: 1px;
+  background: var(--border-light);
+  margin: var(--space-lg) 0;
+}
+.divider--doodle {
+  height: auto;
+  background: none;
+  text-align: center;
+  overflow: visible;
+}
