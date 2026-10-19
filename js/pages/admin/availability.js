@@ -49,41 +49,26 @@ var AdminAvailability = {
 
     container.innerHTML = html;
 
-    // Stall toggle
-    document.getElementById('stall-open-toggle').addEventListener('change', function (e) {
-      Store.setStallOverride(stallId, { isOpen: e.target.checked });
-      Toast.info('Stall is now ' + (e.target.checked ? 'open' : 'closed'));
-      AdminAvailability.render(container);
-    });
+   // Stall toggle
+document.getElementById('stall-open-toggle').addEventListener('change', function (e) {
+  Store.setStallOverride(stallId, { isOpen: e.target.checked });
+  Toast.info('Stall is now ' + (e.target.checked ? 'open' : 'closed'));
+  AdminAvailability.render(container);
+});
 
-    // Bulk available
-    document.getElementById('bulk-available-btn').addEventListener('click', function () {
-      var menu = stall.menu;
-      Object.keys(menu).forEach(function (cat) {
-        menu[cat].forEach(function (item) {
-          var overrides = Store.getStallOverrides();
-          if (!overrides[stallId]) overrides[stallId] = { items: {} };
-          if (!overrides[stallId].items) overrides[stallId].items = {};
-          overrides[stallId].items[item.id] = true;
-          Store._set(Store.KEYS.STALL_OVERRIDES, overrides);
-        });
-      });
-      Toast.success('All items marked available');
-    });
+// Bulk available
+document.getElementById('bulk-available-btn').addEventListener('click', function () {
+  Store.setAllItemsAvailability(stallId, true);
+  Toast.success('All items marked available');
+  AdminAvailability.render(container);
+});
 
-    // Bulk unavailable
-    document.getElementById('bulk-unavailable-btn').addEventListener('click', function () {
-      var menu = stall.menu;
-      Object.keys(menu).forEach(function (cat) {
-        menu[cat].forEach(function (item) {
-          var overrides = Store.getStallOverrides();
-          if (!overrides[stallId]) overrides[stallId] = { items: {} };
-          if (!overrides[stallId].items) overrides[stallId].items = {};
-          overrides[stallId].items[item.id] = false;
-          Store._set(Store.KEYS.STALL_OVERRIDES, overrides);
-        });
-      });
-      Toast.warning('All items marked unavailable');
-    });
+// Bulk unavailable
+document.getElementById('bulk-unavailable-btn').addEventListener('click', function () {
+  Store.setAllItemsAvailability(stallId, false);
+  Toast.warning('All items marked unavailable');
+  AdminAvailability.render(container);
+});
+
   }
 };
