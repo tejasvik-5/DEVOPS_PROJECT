@@ -57,6 +57,14 @@ var AdminMenuMgmt = {
       var sId = input.getAttribute('data-stall-id');
       Store.toggleItemAvailability(sId, itemId);
       var isNowAvail = Store.isItemAvailable(sId, itemId);
+var itemData = StallData.getItem(itemId);
+
+if (!itemData) {
+    Toast.warning('Food item not found.');
+    return;
+}
+
+Toast.info(itemData.name + ' is now ' + (isNowAvail ? 'available' : 'unavailable'));
       var itemData = StallData.getItem(itemId);
       Toast.info(itemData.name + ' is now ' + (isNowAvail ? 'available' : 'unavailable'));
     });
