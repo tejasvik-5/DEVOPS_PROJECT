@@ -76,7 +76,9 @@ test('status label is readable', () => {
 
 test('unknown status gets safe fallback', () => {
   expect(Store.getOrderStatusLabel('UNKNOWN')).toBe('Unknown');
+  
 });
+  
 test('toggleItemAvailability switches an item state', () => {
   expect(Store.isItemAvailable('maximus', 'MAX023')).toBe(true);
 
@@ -88,4 +90,18 @@ test('toggleItemAvailability switches an item state', () => {
 
   expect(Store.isItemAvailable('maximus', 'MAX023')).toBe(true);
 });
+
+test('bulk availability marks every stall item unavailable', () => {
+  Store.setAllItemsAvailability('maximus', false);
+
+  var stall = StallData.getStall('maximus');
+  var menu = stall.menu;
+
+  Object.keys(menu).forEach(function (category) {
+    menu[category].forEach(function (item) {
+      expect(Store.isItemAvailable('maximus', item.id)).toBe(false);
+    });
+  });
+});
+
 });
