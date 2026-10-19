@@ -65,6 +65,8 @@ if (!itemData) {
 }
 
 Toast.info(itemData.name + ' is now ' + (isNowAvail ? 'available' : 'unavailable'));
+      var itemData = StallData.getItem(itemId);
+      Toast.info(itemData.name + ' is now ' + (isNowAvail ? 'available' : 'unavailable'));
     });
   }
 };
