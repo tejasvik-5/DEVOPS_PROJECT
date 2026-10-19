@@ -76,7 +76,21 @@ test('status label is readable', () => {
 
 test('unknown status gets safe fallback', () => {
   expect(Store.getOrderStatusLabel('UNKNOWN')).toBe('Unknown');
+  
 });
+  
+test('toggleItemAvailability switches an item state', () => {
+  expect(Store.isItemAvailable('maximus', 'MAX023')).toBe(true);
+
+  Store.toggleItemAvailability('maximus', 'MAX023');
+
+  expect(Store.isItemAvailable('maximus', 'MAX023')).toBe(false);
+
+  Store.toggleItemAvailability('maximus', 'MAX023');
+
+  expect(Store.isItemAvailable('maximus', 'MAX023')).toBe(true);
+});
+
 test('bulk availability marks every stall item unavailable', () => {
   Store.setAllItemsAvailability('maximus', false);
 
@@ -89,4 +103,5 @@ test('bulk availability marks every stall item unavailable', () => {
     });
   });
 });
+
 });
