@@ -366,13 +366,11 @@ var HomePage = {
         : '<span class="hp-pop__veg-dot hp-pop__veg-dot--veg" title="Veg"></span>';
 
       var avail = Store.isItemAvailable(item.stallId, item.id) && item.available;
-      var foodImg = item.image || HomePage._getFoodImage(item.name);
+       
 
       html +=
         '<div class="hp-pop__card" data-stall-id="' + item.stallId + '">' +
-          '<div class="hp-pop__img-wrap">' +
-            '<img src="' + foodImg + '" alt="' + DOM.escapeHTML(item.name) + '" loading="lazy" class="hp-pop__img">' +
-          '</div>' +
+           
           '<div class="hp-pop__body">' +
             '<div class="hp-pop__row1">' +
               vegDot +
