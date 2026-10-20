@@ -610,42 +610,6 @@ Run frontend and backend tests separately if the repository configures them sepa
 
 ---
 
-## 🐛 Problems Faced and Solutions
-
-### 1. Missing Project Files
-
-Some required application files were missing from a local working-tree state, which affected application loading.
-
-**Solution:** The team inspected the repository history and restored the required files from an available repository revision.
-
-### 2. Local Branch Behind Remote
-
-The local integration branch did not always contain the latest changes available on GitHub.
-
-**Solution:** The team fetched remote updates and synchronized the local branch with the relevant remote version.
-
-### 3. Missing Image Assets
-
-Missing image assets caused resource-loading errors in the browser.
-
-**Solution:** The team identified and restored the required visual assets and checked their references.
-
-### 4. Unnecessary Food Images
-
-Some individual menu and cart image references created unnecessary loading and broken-image areas.
-
-**Solution:** The interface was simplified to use a compact non-photo design for menu and cart items while retaining relevant stall and campus visuals.
-
-### 5. Merge Conflicts
-
-Overlapping changes from different feature branches caused conflicts during integration.
-
-**Solution:** The team compared the conflicting changes, resolved the affected files, and checked the result before completing the merge.
-
-These examples describe issues encountered during development. The exact details should be retained only if they reflect the team's actual experience.
-
----
-
 ## 👥 Team Members
 
 | Member | Role |
