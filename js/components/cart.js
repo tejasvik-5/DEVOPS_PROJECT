@@ -8,13 +8,10 @@ var CartComponent = {
     var vegClass = item.veg ? 'veg-indicator--veg' : 'veg-indicator--nonveg';
     var subtotal = item.price * item.qty;
 
-    var itemImg = item.image || (item.id ? 'assets/images/food/' + item.id + '.webp' : null);
-    var imgHtml = itemImg
-      ? '<img src="' + itemImg + '" alt="' + DOM.escapeHTML(item.name) + '" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-sm);" loading="lazy">'
-      : '<div class="food-card__image-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--cream);border-radius:var(--radius-sm);"><svg viewBox="0 0 40 40" width="28" height="28" style="opacity:0.3;color:var(--teal);"><ellipse cx="20" cy="28" rx="14" ry="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8,28 Q8,18 20,14 Q32,18 32,28" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>';
+  
 
     return '<div class="cart-item" data-item-id="' + item.id + '">' +
-      '<div class="cart-item__image">' + imgHtml + '</div>' +
+   
       '<div class="cart-item__details">' +
         '<p class="cart-item__name">' + DOM.escapeHTML(item.name) + '</p>' +
         '<div class="cart-item__meta">' +
