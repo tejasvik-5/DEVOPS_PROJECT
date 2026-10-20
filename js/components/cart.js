@@ -37,12 +37,8 @@ var CartComponent = {
   renderSummary: function (cart, selectedPaymentMethod) {
     var subtotal = cart.items.reduce(function (s, i) { return s + (i.price * i.qty); }, 0);
     var maxPrep = cart.items.reduce(function (m, i) { return Math.max(m, i.prepTime || 10); }, 0);
-    var paymentMethod = selectedPaymentMethod || 'ONLINE';
-    var isOnline = (paymentMethod === 'ONLINE');
-
-    var btnLabel = isOnline
-      ? 'Pay Online \u2014 \u20B9' + subtotal
-      : 'Place Order \u2014 \u20B9' + subtotal;
+    var paymentMethod = 'PAY_AT_COUNTER';
+var btnLabel = 'Place Order \u2014 \u20B9' + subtotal;
 
     return '<div class="cart-page__summary">' +
       '<div class="cart-page__summary-row"><span>Subtotal</span><span>\u20B9' + subtotal + '</span></div>' +
@@ -53,26 +49,17 @@ var CartComponent = {
     '<div class="payment-method-group">' +
       '<div class="payment-method-group__title">Payment Method</div>' +
 
-      '<label class="payment-option' + (isOnline ? ' is-selected' : '') + '" id="payment-option-online">' +
-        '<input type="radio" name="payment_method" value="ONLINE" ' + (isOnline ? 'checked' : '') + '>' +
-        '<div class="payment-option__body">' +
-          '<div class="payment-option__title-row">' +
-            '<span class="payment-option__label">Pay Online</span>' +
-            '<span class="payment-option__badge">Test Mode</span>' +
-          '</div>' +
-          '<div class="payment-option__desc">UPI \u2022 Cards \u2022 Net Banking</div>' +
-        '</div>' +
-      '</label>' +
+     '<label class="payment-option is-selected" id="payment-option-counter">' +
+  '<input type="radio" name="payment_method" value="PAY_AT_COUNTER" checked>' +
+  '<div class="payment-option__body">' +
+    '<div class="payment-option__title-row">' +
+      '<span class="payment-option__label">Pay at Counter</span>' +
+    '</div>' +
+    '<div class="payment-option__desc">Pay cash or UPI at the counter when picking up</div>' +
+  '</div>' +
+'</label>' +  
 
-      '<label class="payment-option' + (!isOnline ? ' is-selected' : '') + '" id="payment-option-counter">' +
-        '<input type="radio" name="payment_method" value="PAY_AT_COUNTER" ' + (!isOnline ? 'checked' : '') + '>' +
-        '<div class="payment-option__body">' +
-          '<div class="payment-option__title-row">' +
-            '<span class="payment-option__label">Pay at Counter</span>' +
-          '</div>' +
-          '<div class="payment-option__desc">Pay cash or UPI at the counter when picking up</div>' +
-        '</div>' +
-      '</label>' +
+     
     '</div>' +
 
     '<div style="margin-top:var(--space-lg);">' +
