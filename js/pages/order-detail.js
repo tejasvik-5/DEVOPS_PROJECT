@@ -104,7 +104,7 @@ var OrderDetailPage = {
 
     // Actions
     html += '<div style="display:flex;gap:var(--space-md);margin-top:var(--space-lg);">';
-    if (['PENDING', 'PREPARING', 'DELAYED'].indexOf(order.status) !== -1) {
+if (OrderStatus.canCancel(order.status)) {
       html += '<button class="btn btn--secondary btn--full" id="cancel-order-btn">Cancel Order</button>';
     }
     html += '<a href="#orders" class="btn btn--ghost btn--full">All Orders</a>';
