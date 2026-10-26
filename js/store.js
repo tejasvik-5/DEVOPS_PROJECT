@@ -227,6 +227,23 @@ updateOrderStatus: function (orderId, nextStatus, extraUpdates) {
 transitionOrder: function (orderId, nextStatus, updates) {
   return this.updateOrderStatus(orderId, nextStatus, updates);
 },
+cancelOrder: function (orderId) {
+  var order = this.getOrder(orderId);
+
+  if (!order) {
+    return { success: false, reason: 'ORDER_NOT_FOUND' };
+  }
+
+  if (!OrderStatus.canCancel(order.status)) {
+    return { success: false, reason: 'CANNOT_CANCEL' };
+  }
+
+  return this.updateOrderStatus(
+    orderId,
+    'CANCELLED',
+    { completedAt: new Date().toISOString() }
+  );
+},
 getOrderStatusLabel: function (status) {
   var labels = {
     PENDING: 'Pending',
