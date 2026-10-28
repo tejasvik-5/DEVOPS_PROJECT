@@ -245,7 +245,10 @@ cancelOrder: function (orderId) {
   );
 },
 
-
+/**
+ * Returns dashboard metrics for a set of orders.
+ * Keeps aggregation out of UI components.
+ */
 
 getOrderMetrics: function (orders) {
   orders = orders || this.getOrders();
