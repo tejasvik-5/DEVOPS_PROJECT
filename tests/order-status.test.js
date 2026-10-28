@@ -33,4 +33,18 @@ test('invalid order transition is rejected', () => {
   expect(result.success).toBe(false);
   expect(result.reason).toBe('INVALID_TRANSITION');
 });
+test('completed order cannot be cancelled', () => {
+  Store.addOrder({
+    id: 'BL10001',
+    status: 'COMPLETED',
+    stallId: 'maximus',
+    total: 100,
+    items: []
+  });
+
+  var result = Store.cancelOrder('BL10001');
+
+  expect(result.success).toBe(false);
+  expect(result.reason).toBe('CANNOT_CANCEL');
+});
 });
