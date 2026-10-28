@@ -33,4 +33,27 @@ test('invalid order transition is rejected', () => {
   expect(result.success).toBe(false);
   expect(result.reason).toBe('INVALID_TRANSITION');
 });
+test('week two order workflow follows valid status sequence', () => {
+  Store.addOrder({
+    id: 'BL20001',
+    status: 'PENDING',
+    stallId: 'maximus',
+    total: 100,
+    items: [
+      { id: 'MAX023', name: 'Samosa', qty: 1, price: 100 }
+    ]
+  });
+
+  var preparing = Store.updateOrderStatus('BL20001', 'PREPARING');
+  expect(preparing.success).toBe(true);
+
+  var ready = Store.updateOrderStatus('BL20001', 'READY');
+  expect(ready.success).toBe(true);
+
+  var completed = Store.updateOrderStatus('BL20001', 'COMPLETED');
+  expect(completed.success).toBe(true);
+
+  var order = Store.getOrder('BL20001');
+  expect(order.status).toBe('COMPLETED');
+});
 });
