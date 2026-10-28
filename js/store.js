@@ -244,6 +244,24 @@ cancelOrder: function (orderId) {
     { completedAt: new Date().toISOString() }
   );
 },
+
+
+
+getOrderMetrics: function (orders) {
+  orders = orders || this.getOrders();
+
+  return {
+    total: orders.length,
+    pending: Metrics.countByStatus(orders, 'PENDING'),
+    preparing: Metrics.countByStatus(orders, 'PREPARING'),
+    delayed: Metrics.countByStatus(orders, 'DELAYED'),
+    ready: Metrics.countByStatus(orders, 'READY'),
+    completed: Metrics.countByStatus(orders, 'COMPLETED'),
+    cancelled: Metrics.countByStatus(orders, 'CANCELLED'),
+    value: Metrics.totalValue(orders)
+  };
+},
+ 
 getOrderStatusLabel: function (status) {
   var labels = {
     PENDING: 'Pending',
