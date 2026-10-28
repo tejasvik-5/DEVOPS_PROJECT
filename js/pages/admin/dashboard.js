@@ -14,13 +14,7 @@ var AdminDashboard = {
       return o.placedAt && o.placedAt.indexOf(today) === 0;
     });
 
-    var stats = {
-      total: todayOrders.length,
-      pending: todayOrders.filter(function (o) { return o.status === 'PENDING'; }).length,
-      preparing: todayOrders.filter(function (o) { return o.status === 'PREPARING' || o.status === 'DELAYED'; }).length,
-      ready: todayOrders.filter(function (o) { return o.status === 'READY'; }).length,
-      completed: todayOrders.filter(function (o) { return o.status === 'COMPLETED'; }).length
-    };
+  var stats = Store.getOrderMetrics(todayOrders);
 
     var recentOrders = todayOrders.slice(0, 10);
 
