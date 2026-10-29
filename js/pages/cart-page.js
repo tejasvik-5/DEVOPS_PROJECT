@@ -118,6 +118,13 @@ if (!validation.valid) {
     };
 
     Store.addOrder(order);
+if (typeof AppLogger !== 'undefined') {
+  AppLogger.info('Order created', {
+    orderId: orderId,
+    stallId: cart.stallId,
+    total: total
+  });
+}
     Store.clearCart();
     Store.updateStreak();
 
