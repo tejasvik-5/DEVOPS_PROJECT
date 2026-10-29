@@ -25,6 +25,7 @@ global.TimeUtil = require('../js/utils/time.js');
 global.OrderID = require('../js/utils/order-id.js');
 global.OrderStatus = require('../js/utils/order-status.js');
 global.Store = require('../js/store.js');
+global.Metrics = require('../js/utils/metrics.js');
 global.QuantityControl = require('../js/components/quantity-control.js');
 global.FoodCard = require('../js/components/food-card.js');
 const dataExport = require('../js/data.js');
@@ -42,6 +43,7 @@ if (typeof window !== 'undefined') {
   window.OrderID = global.OrderID;
   window.OrderStatus = global.OrderStatus;
   window.Store = global.Store;
+  window.Metrics = global.Metrics;
   window.QuantityControl = global.QuantityControl;
   window.FoodCard = global.FoodCard;
   window.EmptyState = global.EmptyState;
