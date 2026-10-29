@@ -104,4 +104,28 @@ test('bulk availability marks every stall item unavailable', () => {
   });
 });
 
+test('order metrics count statuses and total value', () => {
+  var orders = [
+    { status: 'PENDING', total: 100 },
+    { status: 'READY', total: 150 },
+    { status: 'COMPLETED', total: 200 }
+  ];
+
+  var metrics = Metrics.countByStatus(orders, 'READY');
+
+  expect(metrics).toBe(1);
+  expect(Metrics.totalValue(orders)).toBe(450);
+});
+test('order metrics count statuses and total value', () => {
+  var orders = [
+    { status: 'PENDING', total: 100 },
+    { status: 'READY', total: 150 },
+    { status: 'COMPLETED', total: 200 }
+  ];
+
+  var metrics = Metrics.countByStatus(orders, 'READY');
+
+  expect(metrics).toBe(1);
+  expect(Metrics.totalValue(orders)).toBe(450);
+});
 });
