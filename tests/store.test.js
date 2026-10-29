@@ -128,4 +128,16 @@ test('order metrics count statuses and total value', () => {
   expect(metrics).toBe(1);
   expect(Metrics.totalValue(orders)).toBe(450);
 });
+test('metrics handles an empty order list', () => {
+  expect(Store.getOrderMetrics([])).toEqual({
+    total: 0,
+    pending: 0,
+    preparing: 0,
+    delayed: 0,
+    ready: 0,
+    completed: 0,
+    cancelled: 0,
+    value: 0
+  });
+});
 });
