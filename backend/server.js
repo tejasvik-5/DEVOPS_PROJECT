@@ -17,11 +17,13 @@ const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:8080,http:/
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('localhost') || origin.includes('127.0.0.1')) {
-      return callback(null, true);
-    }
+   if (!origin) return callback(null, true);
+
+if (allowedOrigins.indexOf(origin) !== -1) {
     return callback(null, true);
+}
+
+return callback(new Error('CORS origin not allowed'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
