@@ -72,3 +72,4 @@ test('completed order cannot be cancelled', () => {
   expect(result.success).toBe(false);
   expect(result.reason).toBe('CANNOT_CANCEL');
 });
+});
