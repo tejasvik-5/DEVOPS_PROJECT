@@ -36,11 +36,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    status: 'ok',
-    app: 'BHUKH LAGI Backend Service',
-    timestamp: new Date().toISOString()
-  });
+    res.status(200).json({
+        status: 'ok',
+        app: 'BHUKH LAGI Backend Service',
+        version: '1.0.0',
+        environment: process.env.NODE_ENV || 'development',
+        timestamp: new Date().toISOString()
+    });
 });
 
 // Serve frontend static assets from parent directory
