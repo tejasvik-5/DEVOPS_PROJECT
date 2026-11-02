@@ -17,11 +17,22 @@ var App = {
     setTimeout(function () {
       try {
         Router.resolve();
-      } catch (err) {
-        console.error('Router resolve error:', err);
-      } finally {
-        self.hideLoading();
-      }
+ } catch (err) {
+    if (typeof AppLogger !== 'undefined') {
+        AppLogger.error('Route rendering failed for ' + page, err);
+    } else {
+        console.error('Error rendering page "' + page + '":', err);
+    }
+
+    container.innerHTML =
+        '<div class="container">' +
+        '<div class="empty-state">' +
+        '<h2>Something went wrong</h2>' +
+        '<p>Please refresh and try again.</p>' +
+        '</div></div>';
+} finally {
+    self.hideLoading();
+}
     }, 1200);
 
     // Failsafe: loading screen must dismiss within 2.5s under any condition
