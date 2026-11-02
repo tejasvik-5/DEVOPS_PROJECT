@@ -264,6 +264,19 @@ getOrderMetrics: function (orders) {
     value: Metrics.totalValue(orders)
   };
 },
+/**
+ * Safely formats a value as Indian Rupees.
+ * Returns ₹0 when the provided value is invalid.
+ */
+formatMoney: function (value) {
+  var amount = Number(value);
+
+  if (!Number.isFinite(amount)) {
+    return '₹0';
+  }
+
+  return '₹' + amount.toFixed(0);
+},
  
 getOrderStatusLabel: function (status) {
   var labels = {
