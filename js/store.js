@@ -264,6 +264,16 @@ getOrderMetrics: function (orders) {
     value: Metrics.totalValue(orders)
   };
 },
+
+formatMoney: function (value) {
+  var amount = Number(value);
+
+  if (!Number.isFinite(amount)) {
+    return '₹0';
+  }
+
+  return '₹' + amount.toFixed(0);
+},
  
 getOrderStatusLabel: function (status) {
   var labels = {
