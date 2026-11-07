@@ -722,3 +722,14 @@ It combines student-side ordering, cart management, order tracking, and administ
 The team uses Git and GitHub to manage changes through feature branches, commits, Pull Requests, code reviews, and merge conflict resolution. Automated testing supports the effort to maintain existing functionality while new features are integrated.
 
 The project also provides practical experience in frontend development, backend development, source-code management, team collaboration, and software testing.
+
+## DevOps Improvements
+
+- Centralized validation
+- Centralized order status transitions
+- Basic application logging
+- Dashboard metrics
+- Backend health monitoring
+- CORS restrictions
+- Safe frontend error handling
+- Automated frontend and backend tests
