@@ -43,8 +43,24 @@ MAX_ITEM_QTY: 10,
   // ═══════════════════════ CART (Single-Stall) ═══════════════════════
 
   getCart: function () {
-    return this._get(this.KEYS.CART) || { stallId: null, stallName: '', items: [] };
-  },
+  return this._get(this.KEYS.CART) || { stallId: null, stallName: '', items: [] };
+},
+
+validateCart: function () {
+  var cart = this.getCart();
+
+  if (!cart.items || cart.items.length === 0) {
+    return {
+      valid: false,
+      reason: 'EMPTY_CART'
+    };
+  }
+
+  return {
+    valid: true,
+    reason: null
+  };
+},
 
   setCart: function (cart) {
     this._set(this.KEYS.CART, cart);
