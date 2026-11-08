@@ -21,4 +21,11 @@ describe('BHUKH LAGI Backend Server Tests', () => {
     expect(res.statusCode).toBe(200);
     expect(res.text).toContain('BHUKH LAGI');
   });
+test('health endpoint exposes a valid timestamp', async () => {
+  var res = await request(app).get('/api/health');
+
+  expect(res.statusCode).toBe(200);
+  expect(Number.isNaN(Date.parse(res.body.timestamp))).toBe(false);
+});
+
 });
