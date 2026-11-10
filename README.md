@@ -735,4 +735,4 @@ The project also provides practical experience in frontend development, backend 
 - Automated frontend and backend tests
 
 ## SCM Conflict Demonstration
-This line was intentionally edited by Tejasvi.
+This line was intentionally edited by Ansh.
