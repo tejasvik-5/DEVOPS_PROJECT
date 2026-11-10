@@ -28,4 +28,10 @@ test('health endpoint exposes a valid timestamp', async () => {
   expect(Number.isNaN(Date.parse(res.body.timestamp))).toBe(false);
 });
 
+test('health endpoint returns application version', async () => {
+  var res = await request(app).get('/api/health');
+
+  expect(res.body.version).toBe('1.0.0');
+});
+
 });
