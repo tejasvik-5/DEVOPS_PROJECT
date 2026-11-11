@@ -742,3 +742,6 @@ This line was intentionally edited by Tejasvi.
 Git rebase is used to integrate changes from the latest base branch into a feature branch while maintaining a linear commit history.
 
 This section was added by Tejasvi to demonstrate the Git rebase workflow.
+### Rebase
+
+Rebase replays commits from a feature branch on top of the latest main branch.
