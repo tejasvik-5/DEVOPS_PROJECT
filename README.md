@@ -736,3 +736,9 @@ The project also provides practical experience in frontend development, backend 
 
 ## SCM Conflict Demonstration
 This line was intentionally edited by Tejasvi.
+
+##Git Rebase Demonstration
+
+Git rebase is used to integrate changes from the latest base branch into a feature branch while maintaining a linear commit history.
+
+This section was added by Tejasvi to demonstrate the Git rebase workflow.
