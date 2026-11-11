@@ -17,9 +17,15 @@ var Router = {
   /**
    * Navigate to a route: Router.go('stall/maximus')
    */
-  go: function (path) {
-    window.location.hash = '#' + path;
-  },
+go: function (path) {
+  var nextHash = '#' + path;
+
+  if (window.location.hash === nextHash) {
+    this.resolve();
+  } else {
+    window.location.hash = nextHash;
+  }
+},
 
   /**
    * Parse the current hash into { page, params }
@@ -46,6 +52,14 @@ var Router = {
     var parsed = this.parse();
     var page = parsed.page;
     var param = parsed.param;
+    // Remove the previous login screen when navigating to another page
+if (page !== 'login') {
+  var loginWrap = document.getElementById('login-page-wrap');
+
+  if (loginWrap) {
+    loginWrap.remove();
+  }
+}
 
     // Auth guard: redirect to login if not logged in (except login page)
 if (page !== 'login' && !Store.isLoggedIn()) {

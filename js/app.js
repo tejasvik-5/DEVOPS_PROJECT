@@ -7,10 +7,19 @@ var App = {
   init: function () {
     this.setupLoading();
     this.registerRoutes();
-    this.setupCartListener();
-    this.setupNavbarScroll();
-    if (typeof Sidebar !== 'undefined') Sidebar.init();
-    Router.init();
+this.setupCartListener();
+this.setupNavbarScroll();
+
+if (typeof Sidebar !== 'undefined') {
+  Sidebar.init();
+}
+
+// Initialize navbar buttons, including admin logout
+if (typeof Navbar !== 'undefined') {
+  Navbar.init();
+}
+
+Router.init();
 
     // Dismiss loading screen after routes resolve
     var self = this;
