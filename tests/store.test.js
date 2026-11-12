@@ -140,4 +140,10 @@ test('metrics handles an empty order list', () => {
     value: 0
   });
 });
+
+test('formatMoney safely formats invalid values', () => {
+  expect(Store.formatMoney(120)).toBe('₹120');
+  expect(Store.formatMoney('bad')).toBe('₹0');
+});
+
 });
