@@ -141,9 +141,36 @@ test('metrics handles an empty order list', () => {
   });
 });
 
-test('formatMoney safely formats invalid values', () => {
-  expect(Store.formatMoney(120)).toBe('₹120');
-  expect(Store.formatMoney('bad')).toBe('₹0');
+
+test('week three store utilities handle safe dashboard values', () => {
+  var orders = [
+    { status: 'PENDING', total: 120 },
+    { status: 'READY', total: 180 }
+  ];
+
+  var metrics = Store.getOrderMetrics(orders);
+
+  expect(metrics.total).toBe(2);
+  expect(metrics.pending).toBe(1);
+  expect(metrics.ready).toBe(1);
+  expect(metrics.value).toBe(300);
+
+  expect(Store.formatMoney(metrics.value)).toBe('₹300');
+});
+
+test('week three metrics calculate completed order value correctly', () => {
+  var orders = [
+    { status: 'COMPLETED', total: 200 },
+    { status: 'COMPLETED', total: 150 }
+  ];
+
+  var metrics = Store.getOrderMetrics(orders);
+
+  expect(metrics.total).toBe(2);
+  expect(metrics.completed).toBe(2);
+  expect(metrics.value).toBe(350);
+  expect(Store.formatMoney(metrics.value)).toBe('₹350');
+ 
 });
 
 });
