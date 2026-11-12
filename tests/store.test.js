@@ -157,4 +157,18 @@ test('week three store utilities handle safe dashboard values', () => {
   expect(Store.formatMoney(metrics.value)).toBe('₹300');
 });
 
+test('week three metrics calculate completed order value correctly', () => {
+  var orders = [
+    { status: 'COMPLETED', total: 200 },
+    { status: 'COMPLETED', total: 150 }
+  ];
+
+  var metrics = Store.getOrderMetrics(orders);
+
+  expect(metrics.total).toBe(2);
+  expect(metrics.completed).toBe(2);
+  expect(metrics.value).toBe(350);
+  expect(Store.formatMoney(metrics.value)).toBe('₹350');
+});
+
 });
