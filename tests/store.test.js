@@ -140,4 +140,21 @@ test('metrics handles an empty order list', () => {
     value: 0
   });
 });
+
+test('week three store utilities handle safe dashboard values', () => {
+  var orders = [
+    { status: 'PENDING', total: 120 },
+    { status: 'READY', total: 180 }
+  ];
+
+  var metrics = Store.getOrderMetrics(orders);
+
+  expect(metrics.total).toBe(2);
+  expect(metrics.pending).toBe(1);
+  expect(metrics.ready).toBe(1);
+  expect(metrics.value).toBe(300);
+
+  expect(Store.formatMoney(metrics.value)).toBe('₹300');
+});
+
 });
