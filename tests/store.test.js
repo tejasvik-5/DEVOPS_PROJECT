@@ -141,6 +141,7 @@ test('metrics handles an empty order list', () => {
   });
 });
 
+
 test('week three store utilities handle safe dashboard values', () => {
   var orders = [
     { status: 'PENDING', total: 120 },
@@ -169,6 +170,7 @@ test('week three metrics calculate completed order value correctly', () => {
   expect(metrics.completed).toBe(2);
   expect(metrics.value).toBe(350);
   expect(Store.formatMoney(metrics.value)).toBe('₹350');
+ 
 });
 
 });
