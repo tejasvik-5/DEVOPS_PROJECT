@@ -10,7 +10,8 @@
     "test:frontend": "jest --verbose",
     "test:backend": "npm --prefix backend test",
     "test:watch": "jest --watch",
-    "lint": "echo 'No linting configured yet'"
+    "lint": "echo 'No linting configured yet'",
+    "test:ci": "npm run test:frontend && npm run test:backend"
   },
   "devDependencies": {
     "jest": "^29.7.0",
