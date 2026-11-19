@@ -3,8 +3,10 @@
    ========================================================================== */
 
 var OrderDetailPage = {
+  currentOrder: null,
+
   render: function (container, orderId) {
-    var order = Store.getOrder(orderId);
+    var order = OrderDetailPage.currentOrder;
     if (!order) {
       container.innerHTML = '<div class="container">' + EmptyState.render('orders', 'Go Home', 'home') + '</div>';
       return;
@@ -115,13 +117,130 @@ if (OrderStatus.canCancel(order.status)) {
     container.innerHTML = html;
 
     // Cancel order
-    var cancelBtn = document.getElementById('cancel-order-btn');
-    if (cancelBtn) {
-      cancelBtn.addEventListener('click', function () {
-        Store.updateOrder(orderId, { status: 'CANCELLED', completedAt: new Date().toISOString() });
-        Toast.info('Order cancelled');
-        OrderDetailPage.render(container, orderId);
-      });
+var cancelBtn = document.getElementById('cancel-order-btn');
+
+if (cancelBtn) {
+  cancelBtn.addEventListener('click', function () {
+    var now = new Date().toISOString();
+
+    if (
+      typeof AppConfig === 'undefined' ||
+      typeof fetch === 'undefined'
+    ) {
+      Toast.warning('Unable to connect to the order service.');
+      return;
     }
+
+    cancelBtn.disabled = true;
+
+    fetch(
+      AppConfig.apiUrl(
+        '/api/orders/' +
+        encodeURIComponent(orderId) +
+        '/status'
+      ),
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: 'CANCELLED',
+          cancelledAt: now
+        })
+      }
+    )
+      .then(function (response) {
+        if (!response.ok) {
+          return response.json()
+            .catch(function () {
+              return {};
+            })
+            .then(function (body) {
+              throw new Error(
+                body.error || 'Order cancellation failed'
+              );
+            });
+        }
+
+        return response.json();
+      })
+      .then(function (savedOrder) {
+        // Keep localStorage synchronized temporarily.
+        Store.updateOrder(orderId, {
+          status: savedOrder.status,
+          orderStatus: savedOrder.status,
+          cancelledAt: savedOrder.cancelledAt || now
+        });
+
+        Toast.info('Order cancelled');
+      OrderDetailPage._loadOrder(container, orderId);
+      })
+      .catch(function (error) {
+        console.error(
+          '[BHUKH LAGI] Order cancellation failed:',
+          error
+        );
+
+        cancelBtn.disabled = false;
+        Toast.warning('Could not cancel order.');
+      });
+  });
+}
+  
+},
+
+_loadOrder: function (container, orderId) {
+  if (!orderId) {
+    OrderDetailPage.currentOrder = null;
+    OrderDetailPage.render(container, orderId);
+    return;
   }
+
+  if (
+    typeof AppConfig === 'undefined' ||
+    typeof fetch === 'undefined'
+  ) {
+    OrderDetailPage.currentOrder = Store.getOrder(orderId);
+    OrderDetailPage.render(container, orderId);
+    return;
+  }
+
+  fetch(
+    AppConfig.apiUrl(
+      '/api/orders/' + encodeURIComponent(orderId)
+    )
+  )
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error('Unable to load order');
+      }
+
+      return response.json();
+    })
+    .then(function (order) {
+      OrderDetailPage.currentOrder = Object.assign({}, order, {
+        id: order.orderId || order.id,
+        userId: order.studentId || order.userId,
+        userName: order.studentName || order.userName,
+        placedAt: order.placedAt || order.createdAt,
+        actualReadyAt:
+          order.actualReadyAt ||
+          order.readyAt ||
+          null
+      });
+
+      OrderDetailPage.render(container, orderId);
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Order detail load failed:',
+        error
+      );
+
+      OrderDetailPage.currentOrder = Store.getOrder(orderId);
+      OrderDetailPage.render(container, orderId);
+    });
+}
+
 };

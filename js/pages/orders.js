@@ -3,9 +3,18 @@
    ========================================================================== */
 
 var OrdersPage = {
+  orders: [],
+
   render: function (container) {
-    var activeOrders = Store.getActiveOrders();
-    var pastOrders = Store.getPastOrders();
+    var activeOrders = OrdersPage.orders.filter(function (order) {
+      return ['PENDING', 'PREPARING', 'DELAYED', 'READY']
+        .indexOf(order.status) !== -1;
+    });
+
+    var pastOrders = OrdersPage.orders.filter(function (order) {
+      return ['COMPLETED', 'CANCELLED']
+        .indexOf(order.status) !== -1;
+    });
 
     var html = '<div class="container"><div class="orders-page">' +
       '<div class="page-header">' +
@@ -54,8 +63,70 @@ var OrdersPage = {
       document.getElementById('orders-past').style.display = tabName === 'past' ? 'block' : 'none';
     });
   },
+_loadOrders: function (container) {
+  var user = Store.getUser() || {};
+  var studentId = user.id;
 
+  if (!studentId) {
+    OrdersPage.orders = [];
+    OrdersPage.render(container);
+    return;
+  }
+
+  if (
+    typeof AppConfig === 'undefined' ||
+    typeof fetch === 'undefined'
+  ) {
+    OrdersPage.orders = Store.getOrders();
+    OrdersPage.render(container);
+    return;
+  }
+
+  fetch(
+    AppConfig.apiUrl(
+      '/api/orders?studentId=' +
+      encodeURIComponent(studentId)
+    )
+  )
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error('Unable to load student orders');
+      }
+
+      return response.json();
+    })
+    .then(function (orders) {
+      OrdersPage.orders = orders.map(function (order) {
+        return Object.assign({}, order, {
+          id: order.orderId || order.id,
+
+          userId: order.studentId || order.userId,
+
+          userName: order.studentName || order.userName,
+
+          placedAt: order.placedAt || order.createdAt,
+
+          actualReadyAt:
+            order.actualReadyAt ||
+            order.readyAt ||
+            null
+        });
+      });
+
+      OrdersPage.render(container);
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Student orders load failed:',
+        error
+      );
+
+      OrdersPage.orders = Store.getOrders();
+      OrdersPage.render(container);
+    });
+},
   _renderOrderCard: function (order, isActive) {
+    
     var statusClass = order.status.toLowerCase();
     var itemsText = order.items.map(function (i) { return i.qty + 'x ' + i.name; }).join(', ');
 

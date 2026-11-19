@@ -11,11 +11,12 @@ var ADMIN_STATUS_LABELS = {
 };
 var AdminOrderQueue = {
   currentFilter: 'ALL',
+    orders: [],
 
   render: function (container) {
     var user = Store.getUser();
     var stallId = user.stallId;
-    var orders = Store.getStallOrders(stallId);
+    var orders = AdminOrderQueue.orders;
 
     // Group by status
     var statusGroups = { ALL: orders };
@@ -52,11 +53,75 @@ var AdminOrderQueue = {
       AdminOrderQueue.currentFilter = tab.getAttribute('data-status');
       var filtered = statusGroups[AdminOrderQueue.currentFilter] || [];
       document.getElementById('order-queue-list').innerHTML = AdminOrderQueue._renderOrders(filtered);
-      AdminOrderQueue._bindActions(container);
+      AdminOrderQueue.
+      _bindActions(container);
     });
 
     AdminOrderQueue._bindActions(container);
   },
+  _loadOrders: function (container) {
+  var user = Store.getUser() || {};
+  var stallId = user.stallId;
+
+  if (!stallId) {
+    AdminOrderQueue.orders = [];
+    AdminOrderQueue.render(container);
+    return;
+  }
+
+  if (
+    typeof AppConfig === 'undefined' ||
+    typeof fetch === 'undefined'
+  ) {
+    AdminOrderQueue.orders = Store.getStallOrders(stallId);
+    AdminOrderQueue.render(container);
+    return;
+  }
+
+  fetch(
+    AppConfig.apiUrl(
+      '/api/orders?stallId=' + encodeURIComponent(stallId)
+    )
+  )
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error('Unable to load database orders');
+      }
+
+      return response.json();
+    })
+    .then(function (orders) {
+      AdminOrderQueue.orders = orders.map(function (order) {
+        return Object.assign({}, order, {
+          id: order.orderId || order.id,
+
+          placedAt:
+            order.placedAt ||
+            order.createdAt,
+
+          estimatedReadyAt:
+            order.estimatedReadyAt || null,
+
+          actualReadyAt:
+            order.actualReadyAt ||
+            order.readyAt ||
+            null
+        });
+      });
+
+      AdminOrderQueue.render(container);
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Database order load failed:',
+        error
+      );
+
+      // Temporary fallback while database integration is being tested.
+      AdminOrderQueue.orders = Store.getStallOrders(stallId);
+      AdminOrderQueue.render(container);
+    });
+},
 
   _renderOrders: function (orders) {
     if (orders.length === 0) {
@@ -128,52 +193,178 @@ var AdminOrderQueue = {
     }
     return actions;
   },
+  _updateDatabaseStatus: function (orderId, updates) {
+  if (
+    typeof AppConfig === 'undefined' ||
+    typeof fetch === 'undefined'
+  ) {
+    return Promise.reject(
+      new Error('Database API is unavailable')
+    );
+  }
+
+  return fetch(
+    AppConfig.apiUrl(
+      '/api/orders/' +
+      encodeURIComponent(orderId) +
+      '/status'
+    ),
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updates)
+    }
+  )
+    .then(function (response) {
+      if (!response.ok) {
+        return response.json()
+          .catch(function () {
+            return {};
+          })
+          .then(function (body) {
+            throw new Error(
+              body.error || 'Order status update failed'
+            );
+          });
+      }
+
+      return response.json();
+    });
+},
 
   _bindActions: function (container) {
     DOM.on(container, 'click', '.action-accept', function (e, btn) {
-      var oid = btn.getAttribute('data-oid');
-      var result = Store.updateOrderStatus(
-  oid,
-  'PREPARING',
-  { acceptedAt: new Date().toISOString() }
-);
+  var oid = btn.getAttribute('data-oid');
+  var now = new Date().toISOString();
 
-if (!result.success) {
-  Toast.warning('Order cannot be accepted: ' + result.reason);
-  return;
-}
+  AdminOrderQueue._updateDatabaseStatus(oid, {
+    status: 'PREPARING',
+    acceptedAt: now
+  })
+    .then(function () {
       Toast.success('Order ' + oid + ' accepted');
-      AdminOrderQueue.render(container);
-    });
+      AdminOrderQueue._loadOrders(container);
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Accept status update failed:',
+        error
+      );
 
-    DOM.on(container, 'click', '.action-ready', function (e, btn) {
-      var oid = btn.getAttribute('data-oid');
-      Store.updateOrder(oid, { status: 'READY', actualReadyAt: new Date().toISOString() });
-      Toast.success('Order ' + oid + ' is ready!');
-      AdminOrderQueue.render(container);
+      Toast.warning('Order could not be accepted.');
     });
+});
+
+  DOM.on(container, 'click', '.action-ready', function (e, btn) {
+  var oid = btn.getAttribute('data-oid');
+  var now = new Date().toISOString();
+
+  AdminOrderQueue._updateDatabaseStatus(oid, {
+    status: 'READY',
+    actualReadyAt: now,
+    readyAt: now
+  })
+    .then(function () {
+      Toast.success('Order ' + oid + ' is ready!');
+      AdminOrderQueue._loadOrders(container);
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Ready status update failed:',
+        error
+      );
+
+      Toast.warning('Could not update order status.');
+    });
+});
 
     DOM.on(container, 'click', '.action-complete', function (e, btn) {
-      var oid = btn.getAttribute('data-oid');
-      Store.updateOrder(oid, { status: 'COMPLETED', completedAt: new Date().toISOString() });
+  var oid = btn.getAttribute('data-oid');
+  var now = new Date().toISOString();
+
+  AdminOrderQueue._updateDatabaseStatus(oid, {
+    status: 'COMPLETED',
+    completedAt: now
+  })
+    .then(function () {
       Toast.success('Order ' + oid + ' completed');
-      AdminOrderQueue.render(container);
-    });
+      AdminOrderQueue._loadOrders(container);
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Complete status update failed:',
+        error
+      );
 
-    DOM.on(container, 'click', '.action-cancel', function (e, btn) {
-      var oid = btn.getAttribute('data-oid');
-      Store.updateOrder(oid, { status: 'CANCELLED', completedAt: new Date().toISOString() });
+      Toast.warning('Could not complete order.');
+    });
+});
+
+    
+     DOM.on(container, 'click', '.action-cancel', function (e, btn) {
+  var oid = btn.getAttribute('data-oid');
+  var now = new Date().toISOString();
+
+  AdminOrderQueue._updateDatabaseStatus(oid, {
+    status: 'CANCELLED',
+    cancelledAt: now
+  })
+    .then(function () {
       Toast.info('Order ' + oid + ' cancelled');
-      AdminOrderQueue.render(container);
-    });
+      AdminOrderQueue._loadOrders(container);
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Cancel status update failed:',
+        error
+      );
 
-    DOM.on(container, 'click', '.action-delay', function (e, btn) {
-      var oid = btn.getAttribute('data-oid');
-      var order = Store.getOrder(oid);
-      var newEstimate = TimeUtil.addMinutes(order.estimatedReadyAt, 10).toISOString();
-      Store.updateOrder(oid, { status: 'DELAYED', updatedEstimate: newEstimate, delayReason: 'Preparation taking longer than expected' });
-      Toast.warning('Order ' + oid + ' marked delayed (+10 min)');
-      AdminOrderQueue.render(container);
+      Toast.warning('Could not cancel order.');
     });
+});
+
+  DOM.on(container, 'click', '.action-delay', function (e, btn) {
+  var oid = btn.getAttribute('data-oid');
+
+  var order = AdminOrderQueue.orders.find(function (o) {
+    return o.id === oid || o.orderId === oid;
+  });
+
+  if (!order) {
+    Toast.warning('Order not found.');
+    return;
+  }
+
+  var baseTime =
+    order.updatedEstimate ||
+    order.estimatedReadyAt ||
+    new Date().toISOString();
+
+  var newEstimate =
+    TimeUtil.addMinutes(baseTime, 10).toISOString();
+
+  AdminOrderQueue._updateDatabaseStatus(oid, {
+    status: 'DELAYED',
+    updatedEstimate: newEstimate,
+    delayReason: 'Preparation taking longer than expected'
+  })
+    .then(function () {
+      Toast.warning(
+        'Order ' + oid + ' marked delayed (+10 min)'
+      );
+
+      AdminOrderQueue._loadOrders(container);
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Delay status update failed:',
+        error
+      );
+
+      Toast.warning('Could not mark order delayed.');
+    });
+});
   }
 };

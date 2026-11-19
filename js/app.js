@@ -83,11 +83,11 @@ Router.init();
     Router.on('stalls', StallsPage.render);
     Router.on('stall', StallDetailPage.render);
     Router.on('cart', CartPage.render);
-    Router.on('orders', OrdersPage.render);
-    Router.on('order', OrderDetailPage.render);
+   Router.on('orders', OrdersPage._loadOrders);
+   Router.on('order', OrderDetailPage._loadOrder);
     Router.on('profile', ProfilePage.render);
     Router.on('admin/dashboard', AdminDashboard.render);
-    Router.on('admin/orders', AdminOrderQueue.render);
+    Router.on('admin/orders', AdminOrderQueue._loadOrders);
     Router.on('admin/menu', AdminMenuMgmt.render);
     Router.on('admin/availability', AdminAvailability.render);
   },
