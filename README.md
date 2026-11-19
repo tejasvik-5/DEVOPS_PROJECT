@@ -745,3 +745,30 @@ This section was added by Tejasvi to demonstrate the Git rebase workflow.
 ### Rebase
 
 Rebase replays commits from a feature branch on top of the latest main branch.
+
+## Deployment
+
+The BHUKH LAGI frontend is configured for deployment using GitHub Actions and GitHub Pages.
+
+### Deployment Workflow
+
+Push / Pull Request
+→ Automated Tests
+→ Merge into tejasvi/scm
+→ GitHub Actions
+→ GitHub Pages Deployment
+
+### Backend and Database
+
+The application uses a Node.js backend and MongoDB database.
+
+During local development:
+- Backend runs on localhost:3000.
+- MongoDB runs locally.
+
+For production deployment:
+- Frontend can be hosted on GitHub Pages.
+- Backend requires a separate hosting service.
+- MongoDB Atlas can provide the cloud database.
+
+The production frontend must be configured to communicate with the deployed backend API.
