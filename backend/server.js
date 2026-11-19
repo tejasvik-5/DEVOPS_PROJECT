@@ -2,7 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-
+const connectDB = require('./config/db');
+const orderRoutes = require('./routes/orders');
+const stallRoutes = require('./routes/stalls');
+const menuRoutes = require('./routes/menu');
+const userRoutes = require('./routes/users');
 // Load environment variables if present
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
@@ -33,6 +37,11 @@ return callback(new Error('CORS origin not allowed'));
 // Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Database-backed API routes
+app.use('/api/orders', orderRoutes);
+app.use('/api/stalls', stallRoutes);
+app.use('/api/menu', menuRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -64,13 +73,21 @@ app.get('*', (req, res, next) => {
 
 // Start server if not imported by test suite
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`====================================================`);
-    console.log(`  BHUKH LAGI Backend Service running                `);
-    console.log(`  Listening on: http://localhost:${PORT}             `);
-    console.log(`  API Health:   http://localhost:${PORT}/api/health  `);
-    console.log(`====================================================`);
-  });
+  connectDB()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log('================================================');
+        console.log('  BHUKH LAGI Backend Service running');
+        console.log(`  Listening on: http://localhost:${PORT}`);
+        console.log(`  API Health:   http://localhost:${PORT}/api/health`);
+        console.log(`  Orders API:   http://localhost:${PORT}/api/orders`);
+        console.log('================================================');
+      });
+    })
+    .catch((error) => {
+      console.error('Unable to start backend:', error.message);
+      process.exit(1);
+    });
 }
 
 module.exports = app;

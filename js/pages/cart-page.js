@@ -118,6 +118,70 @@ if (!validation.valid) {
     };
 
     Store.addOrder(order);
+    // Synchronize the locally created order with the centralized backend database.
+if (
+  typeof AppConfig !== 'undefined' &&
+  typeof fetch !== 'undefined'
+) {
+  var apiOrder = {
+    orderId: order.orderId || order.id,
+    studentId: order.userId || 'GUEST',
+    studentName: order.userName || 'Guest Student',
+    stallId: order.stallId,
+    stallName: order.stallName,
+
+    items: order.items.map(function (item) {
+      return {
+        itemId: item.id,
+        name: item.name,
+        price: Number(item.price) || 0,
+        qty: Number(item.qty) || 1,
+        subtotal: (Number(item.price) || 0) * (Number(item.qty) || 1)
+      };
+    }),
+
+    total: Number(order.total) || 0,
+paymentMethod: 'PAY_AT_COUNTER',
+paymentStatus: 'PENDING',
+status: order.status || 'PENDING',
+
+placedAt: order.placedAt || order.createdAt || new Date().toISOString(),
+estimatedReadyAt: order.estimatedReadyAt || null,
+acceptedAt: order.acceptedAt || null,
+actualReadyAt: order.actualReadyAt || null,
+completedAt: order.completedAt || null,
+updatedEstimate: order.updatedEstimate || null,
+delayReason: order.delayReason || null
+  };
+
+  fetch(AppConfig.apiUrl('/api/orders'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(apiOrder)
+  })
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error('Order database sync failed');
+      }
+
+      return response.json();
+    })
+    .then(function (savedOrder) {
+      if (typeof AppLogger !== 'undefined') {
+        AppLogger.info('Order synchronized with database', {
+          orderId: savedOrder.orderId
+        });
+      }
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Database order sync failed:',
+        error
+      );
+    });
+}
 if (typeof AppLogger !== 'undefined') {
   AppLogger.info('Order created', {
     orderId: orderId,
