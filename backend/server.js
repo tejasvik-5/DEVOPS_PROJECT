@@ -30,7 +30,7 @@ if (allowedOrigins.indexOf(origin) !== -1) {
 return callback(new Error('CORS origin not allowed'));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
