@@ -2,12 +2,62 @@
    BHUKH LAGI — Admin Dashboard (admin/dashboard.js)
    ========================================================================== */
 
-var AdminDashboard = {
+ var AdminDashboard = {
   render: function (container) {
     var user = Store.getUser();
     var stallId = user.stallId;
+
+    if (
+      typeof AppConfig !== 'undefined' &&
+      typeof fetch !== 'undefined'
+    ) {
+      AdminDashboard._loadOrders(container, stallId);
+      return;
+    }
+
+    AdminDashboard._renderDashboard(
+      container,
+      stallId,
+      Store.getStallOrders(stallId)
+    );
+  },
+
+  _loadOrders: function (container, stallId) {
+    fetch(
+      AppConfig.apiUrl(
+        '/api/orders?stallId=' + encodeURIComponent(stallId)
+      )
+    )
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error('Unable to load dashboard orders');
+        }
+
+        return response.json();
+      })
+      .then(function (orders) {
+        AdminDashboard._renderDashboard(
+          container,
+          stallId,
+          Array.isArray(orders) ? orders : []
+        );
+      })
+      .catch(function (error) {
+        console.error(
+          '[BHUKH LAGI] Dashboard order load failed:',
+          error
+        );
+
+        AdminDashboard._renderDashboard(
+          container,
+          stallId,
+          Store.getStallOrders(stallId)
+        );
+      });
+  },
+
+  _renderDashboard: function (container, stallId, orders) {
     var stall = StallData.getStall(stallId);
-    var orders = Store.getStallOrders(stallId);
 
     var today = TimeUtil.getTodayStr();
     var todayOrders = orders.filter(function (o) {
