@@ -89,7 +89,7 @@ if (!validation.valid) {
     var user = Store.getUser() || {};
     var total = Store.getCartTotal();
 
-    var orderId = OrderID.generate();
+    var orderId = null;
     var order = {
       id: orderId,
       orderId: orderId,
@@ -117,14 +117,13 @@ if (!validation.valid) {
       updatedEstimate: null
     };
 
-    Store.addOrder(order);
+
     // Synchronize the locally created order with the centralized backend database.
 if (
   typeof AppConfig !== 'undefined' &&
   typeof fetch !== 'undefined'
 ) {
   var apiOrder = {
-    orderId: order.orderId || order.id,
     studentId: order.userId || 'GUEST',
     studentName: order.userName || 'Guest Student',
     stallId: order.stallId,
@@ -169,34 +168,45 @@ delayReason: order.delayReason || null
       return response.json();
     })
     .then(function (savedOrder) {
-      if (typeof AppLogger !== 'undefined') {
-        AppLogger.info('Order synchronized with database', {
-          orderId: savedOrder.orderId
-        });
-      }
-    })
-    .catch(function (error) {
-      console.error(
-        '[BHUKH LAGI] Database order sync failed:',
-        error
-      );
-    });
-}
-if (typeof AppLogger !== 'undefined') {
-  AppLogger.info('Order created', {
-    orderId: orderId,
-    stallId: cart.stallId,
-    total: total
-  });
-}
-    Store.clearCart();
-    Store.updateStreak();
+  orderId = savedOrder.orderId;
 
-    Toast.success('Order placed! ' + orderId);
-    if (typeof Router !== 'undefined' && Router.go) {
-      Router.go('order/' + orderId);
-    } else {
-      window.location.hash = '#order/' + orderId;
-    }
+  order.id = savedOrder.orderId;
+  order.orderId = savedOrder.orderId;
+
+  Store.addOrder(
+    Object.assign({}, order, {
+      id: savedOrder.orderId,
+      orderId: savedOrder.orderId
+    })
+  );
+
+  if (typeof AppLogger !== 'undefined') {
+    AppLogger.info('Order synchronized with database', {
+      orderId: savedOrder.orderId
+    });
   }
+
+  Store.clearCart();
+  Store.updateStreak();
+
+  Toast.success('Order placed! ' + orderId);
+
+  if (typeof Router !== 'undefined' && Router.go) {
+    Router.go('order/' + orderId);
+  } else {
+    window.location.hash = '#/order/' + orderId;
+  }
+})
+               .catch(function (error) {
+        console.error(
+          '[BHUKH LAGI] Database order sync failed:',
+          error
+        );
+
+        Toast.warning(
+          'Order could not be placed. Please try again.'
+        );
+      });
+  }
+}
 };

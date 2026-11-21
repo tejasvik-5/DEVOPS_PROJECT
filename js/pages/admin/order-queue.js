@@ -202,7 +202,15 @@ var AdminOrderQueue = {
       new Error('Database API is unavailable')
     );
   }
+var token = sessionStorage.getItem(
+  'bhukh_lagi_admin_token'
+);
 
+if (!token) {
+  return Promise.reject(
+    new Error('Admin authentication required')
+  );
+}
   return fetch(
     AppConfig.apiUrl(
       '/api/orders/' +
@@ -212,8 +220,9 @@ var AdminOrderQueue = {
     {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json'
-      },
+  'Content-Type': 'application/json',
+  'Authorization': 'Bearer ' + token
+},
       body: JSON.stringify(updates)
     }
   )

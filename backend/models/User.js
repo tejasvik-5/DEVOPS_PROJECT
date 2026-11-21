@@ -24,7 +24,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null
     },
-
+    passwordHash: {
+  type: String,
+  default: null,
+  select: false
+},
     active: {
       type: Boolean,
       default: true

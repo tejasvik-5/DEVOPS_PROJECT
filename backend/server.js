@@ -7,6 +7,7 @@ const orderRoutes = require('./routes/orders');
 const stallRoutes = require('./routes/stalls');
 const menuRoutes = require('./routes/menu');
 const userRoutes = require('./routes/users');
+const authRoutes = require('./routes/auth');
 // Load environment variables if present
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
@@ -42,6 +43,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/stalls', stallRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
