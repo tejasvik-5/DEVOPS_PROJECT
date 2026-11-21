@@ -58,8 +58,9 @@ var LoginPage = {
           '</div>' +
           '<div class="lp-input-group" style="margin-top: 14px;">' +
             '<label class="lp-label" for="lp-student-input">SAP ID or Phone Number</label>' +
-            '<input type="text" id="lp-student-input" class="lp-input"' +
-                   ' placeholder="Enter SAP ID or phone number"' +
+            ''<input type="text" id="lp-student-input" class="lp-input"' +
+            ' inputmode="numeric" minlength="9" maxlength="10"' +
+            ' placeholder="Enter SAP ID or phone number"' +
                    ' autocomplete="off" autocorrect="off" spellcheck="false"' +
                    ' aria-describedby="lp-student-error">' +
             '<span id="lp-student-error" class="lp-error" role="alert" aria-live="polite"></span>' +
