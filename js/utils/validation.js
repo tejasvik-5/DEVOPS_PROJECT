@@ -5,10 +5,12 @@ var Validation = {
       valueText.length <= maxLength;
   },
 
-  studentLogin: function (name, id) {
-    return this.text(name, 2, 60) &&
-      this.text(id, 3, 30);
-  },
+ studentLogin: function (name, id) {
+  var studentId = String(id || '').trim();
+
+  return this.text(name, 2, 60) &&
+    /^\d{9,10}$/.test(studentId);
+},
 
   adminLogin: function (id) {
     return /^admin-[a-z0-9-]+$/i.test(String(id || '').trim());
