@@ -105,7 +105,7 @@
       recentOrders.forEach(function (order) {
         var itemsText = order.items.map(function (i) { return i.qty + 'x ' + i.name; }).join(', ');
         html += '<tr onclick="Router.go(\'admin/orders\')" style="cursor:pointer;">' +
-          '<td><strong>' + order.id + '</strong></td>' +
+          '<td><strong>' + (order.orderId || order.id) + '</strong></td>' +
           '<td>' + DOM.escapeHTML(itemsText) + '</td>' +
           '<td>\u20B9' + order.total + '</td>' +
           '<td><span class="badge badge--status badge--' + order.status.toLowerCase() + '"><span class="badge__dot"></span>' + order.status + '</span></td>' +
