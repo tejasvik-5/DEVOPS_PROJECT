@@ -105,20 +105,22 @@ Router.init();
         badge.style.display = count > 0 ? 'flex' : 'none';
       }
 
-      // Floating cart bar
-      var floatingCart = document.getElementById('floating-cart');
-      var floatingCount = document.getElementById('floating-cart-count');
-      var floatingTotal = document.getElementById('floating-cart-total');
+    // Floating cart bar
+var floatingCart = document.getElementById('floating-cart');
+var floatingCount = document.getElementById('floating-cart-count');
+var floatingTotal = document.getElementById('floating-cart-total');
 
-      if (floatingCart) {
-        if (count > 0 && Router.currentPage === 'stall') {
-          floatingCart.style.display = 'block';
-          floatingCart.classList.add('visible');
-        } else {
-          floatingCart.classList.remove('visible');
-          setTimeout(function () { floatingCart.style.display = 'none'; }, 400);
-        }
-      }
+if (floatingCart) {
+  var currentPage = window.location.hash.split('/')[0].replace('#', '');
+
+  if (count > 0 && currentPage === 'stall') {
+    floatingCart.style.display = 'block';
+    floatingCart.classList.add('visible');
+  } else {
+    floatingCart.classList.remove('visible');
+    floatingCart.style.display = 'none';
+  }
+}
 
       if (floatingCount) floatingCount.textContent = count + ' item' + (count !== 1 ? 's' : '');
       if (floatingTotal) {
