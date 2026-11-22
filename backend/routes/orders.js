@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
+const { authenticateAdmin } = require('../middleware/auth');
+const Counter = require('../models/Counter');
 
 // GET all orders
 router.get('/', async function (req, res) {
@@ -49,14 +51,61 @@ router.get('/:orderId', async function (req, res) {
     });
   }
 });
+async function generateOrderId() {
+  const latestOrder = await Order.findOne({
+    orderId: /^BL\d+$/
+  })
+    .sort({ orderId: -1 })
+    .select('orderId')
+    .lean();
 
+  let minimumValue = 10000;
+
+  if (latestOrder && latestOrder.orderId) {
+    const parsed = parseInt(
+      latestOrder.orderId.replace('BL', ''),
+      10
+    );
+
+    if (Number.isInteger(parsed) && parsed > minimumValue) {
+      minimumValue = parsed;
+    }
+  }
+
+  const counter = await Counter.findOneAndUpdate(
+    { key: 'orderId' },
+    {
+      $max: {
+        value: minimumValue
+      }
+    },
+    {
+      new: true,
+      upsert: true,
+      setDefaultsOnInsert: true
+    }
+  );
+
+  const nextCounter = await Counter.findOneAndUpdate(
+    { key: 'orderId' },
+    {
+      $inc: {
+        value: 1
+      }
+    },
+    {
+      new: true
+    }
+  );
+
+  return 'BL' + nextCounter.value;
+}
 // CREATE order
 router.post('/', async function (req, res) {
   try {
-    const data = req.body;
+    const data = Object.assign({}, req.body);
 
     if (
-      !data.orderId ||
       !data.studentId ||
       !data.studentName ||
       !data.stallId ||
@@ -68,7 +117,7 @@ router.post('/', async function (req, res) {
         error: 'INVALID_ORDER'
       });
     }
-
+    data.orderId = await generateOrderId();
     const order = await Order.create(data);
 
     res.status(201).json(order);
@@ -88,8 +137,11 @@ router.post('/', async function (req, res) {
 });
 
 // UPDATE order status
-router.patch('/:orderId/status', async function (req, res) {
-  try {
+router.patch(
+  '/:orderId/status',
+  authenticateAdmin,
+async function (req, res){
+try {
     const allowedStatuses = [
       'PENDING',
       'PREPARING',
@@ -135,8 +187,12 @@ if (
     requestedStatus: nextStatus
   });
 }
-
-    const order = await Order.findOneAndUpdate(
+if (existingOrder.stallId !== req.user.stallId) {
+  return res.status(403).json({
+    error: 'STALL_ACCESS_DENIED'
+  });
+}
+const order = await Order.findOneAndUpdate(
       { orderId: req.params.orderId },
       {
   status: nextStatus,
@@ -181,12 +237,11 @@ if (
       });
     }
 
-    res.status(200).json(order);
+        res.status(200).json(order);
   } catch (error) {
     res.status(400).json({
       error: 'ORDER_UPDATE_FAILED'
     });
   }
 });
-
 module.exports = router;

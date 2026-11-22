@@ -58,6 +58,7 @@ var Navbar = {
     if (logoutBtn) {
       logoutBtn.addEventListener('click', function () {
         Store.logout();
+        sessionStorage.removeItem('bhukh_lagi_admin_token');
         Router.go('login');
       });
     }

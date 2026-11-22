@@ -69,15 +69,24 @@ var LoginPage = {
 
         '<!-- Admin section (hidden by default) -->' +
         '<div id="lp-admin-section" class="lp-section lp-section--hidden">' +
-          '<div class="lp-input-group">' +
-            '<label class="lp-label" for="lp-admin-input">Stall Login ID</label>' +
-            '<input type="text" id="lp-admin-input" class="lp-input"' +
-                   ' placeholder="e.g. admin-maximus"' +
-                   ' autocomplete="off" autocorrect="off" spellcheck="false"' +
-                   ' aria-describedby="lp-admin-error">' +
-            '<span id="lp-admin-error" class="lp-error" role="alert" aria-live="polite"></span>' +
-          '</div>' +
-        '</div>' +
+  '<div class="lp-input-group">' +
+    '<label class="lp-label" for="lp-admin-input">Stall Login ID</label>' +
+    '<input type="text" id="lp-admin-input" class="lp-input"' +
+      ' placeholder="e.g. admin-maximus"' +
+      ' autocomplete="off" autocorrect="off" spellcheck="false"' +
+      ' aria-describedby="lp-admin-error">' +
+  '</div>' +
+
+  '<div class="lp-input-group" style="margin-top:14px;">' +
+    '<label class="lp-label" for="lp-admin-password">Password</label>' +
+    '<input type="password" id="lp-admin-password" class="lp-input"' +
+      ' placeholder="Enter admin password"' +
+      ' autocomplete="current-password"' +
+      ' aria-describedby="lp-admin-error">' +
+  '</div>' +
+
+  '<span id="lp-admin-error" class="lp-error" role="alert" aria-live="polite"></span>' +
+'</div>' +
 
         '<button id="lp-cta-btn" class="lp-cta" aria-label="Continue and log in">' +
           '<span class="lp-cta__text">Let\'s Eat! \u2192</span>' +
@@ -129,12 +138,24 @@ var LoginPage = {
     }
 
     var adminInput = document.getElementById('lp-admin-input');
+    var adminPassword = document.getElementById('lp-admin-password');
+
+if (adminPassword) {
+  adminPassword.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') LoginPage._submit();
+  });
+
+  adminPassword.addEventListener('input', function () {
+    LoginPage._clearError('lp-admin-password', 'lp-admin-error');
+  });
+}
     if (adminInput) {
       adminInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') LoginPage._submit();
       });
       adminInput.addEventListener('input', function () {
         LoginPage._clearError('lp-admin-input', 'lp-admin-error');
+        LoginPage._clearError('lp-admin-password', 'lp-admin-error');
       });
     }
   },
@@ -219,34 +240,119 @@ _loginStudent: function () {
 
 
   _loginAdmin: function () {
-    var input = document.getElementById('lp-admin-input');
-    var value = input.value.trim().toLowerCase();
+  var input = document.getElementById('lp-admin-input');
+  var passwordInput = document.getElementById('lp-admin-password');
 
-    if (!value) {
-      LoginPage._showError('lp-admin-input', 'lp-admin-error',
-        'Please enter a stall login ID.');
-      return;
+  var value = input ? input.value.trim().toLowerCase() : '';
+  var password = passwordInput ? passwordInput.value : '';
+
+  if (!value) {
+    LoginPage._showError(
+      'lp-admin-input',
+      'lp-admin-error',
+      'Please enter a stall login ID.'
+    );
+    return;
+  }
+
+  if (!password) {
+    LoginPage._showError(
+      'lp-admin-password',
+      'lp-admin-error',
+      'Please enter your password.'
+    );
+    return;
+  }
+
+  if (
+    typeof AppConfig === 'undefined' ||
+    typeof fetch === 'undefined'
+  ) {
+    LoginPage._showError(
+      'lp-admin-input',
+      'lp-admin-error',
+      'Admin login service is unavailable.'
+    );
+    return;
+  }
+
+  fetch(
+    AppConfig.apiUrl('/api/auth/admin/login'),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userId: value,
+        password: password
+      })
     }
+  )
+    .then(function (response) {
+      return response.json().then(function (data) {
+        return {
+          ok: response.ok,
+          status: response.status,
+          data: data
+        };
+      });
+    })
+    .then(function (result) {
+      if (!result.ok) {
+        throw new Error(
+          result.data && result.data.error
+            ? result.data.error
+            : 'Invalid admin ID or password.'
+        );
+      }
 
-    var adminData = ADMIN_IDS[value];
-    if (!adminData) {
-      LoginPage._showError('lp-admin-input', 'lp-admin-error',
-        'Stall ID not recognized. Try: admin-maximus, admin-dosa, etc.');
-      return;
-    }
+      if (!result.data.token || !result.data.admin) {
+        throw new Error('Invalid authentication response.');
+      }
 
-    LoginPage._clearError('lp-admin-input', 'lp-admin-error');
+      sessionStorage.setItem(
+        'bhukh_lagi_admin_token',
+        result.data.token
+      );
 
-    Store.setUser({
-      id: value,
-      name: adminData.name,
-      role: 'admin',
-      stallId: adminData.stallId
+      Store.setUser({
+        id: result.data.admin.userId,
+        name: result.data.admin.name,
+        role: result.data.admin.role,
+        stallId: result.data.admin.stallId
+      });
+
+      LoginPage._clearError(
+        'lp-admin-input',
+        'lp-admin-error'
+      );
+
+      LoginPage._clearError(
+        'lp-admin-password',
+        'lp-admin-error'
+      );
+
+      LoginPage._cleanup();
+      Router.go('admin/dashboard');
+    })
+    .catch(function (error) {
+      console.error(
+        '[BHUKH LAGI] Admin login failed:',
+        error
+      );
+
+      sessionStorage.removeItem(
+        'bhukh_lagi_admin_token'
+      );
+
+      LoginPage._showError(
+        'lp-admin-password',
+        'lp-admin-error',
+        'Invalid admin ID or password.'
+      );
     });
-
-    LoginPage._cleanup();
-    Router.go('admin/dashboard');
-  },
+},
 
   _showError: function (inputId, errorId, message) {
     var input = document.getElementById(inputId);

@@ -50,6 +50,7 @@ var ProfilePage = {
     container.innerHTML = html;
 
     document.getElementById('logout-btn').addEventListener('click', function () {
+      sessionStorage.removeItem('bhukh_lagi_admin_token');
       Store.logout();
       Router.go('login');
     });
